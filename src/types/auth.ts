@@ -25,6 +25,6 @@ export interface VerifyOtpResponse {
   token: string;
 }
 
-export type LoginStep = "login" | "otp";
+export type LoginStep = "login" | "otp" | "reset";
 
 // PAGE STATE

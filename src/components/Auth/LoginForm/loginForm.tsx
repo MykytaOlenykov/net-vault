@@ -1,4 +1,4 @@
-import { PasswordInput, TextInput, Button } from "@mantine/core";
+import { PasswordInput, TextInput, Button, Anchor } from "@mantine/core";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -13,8 +13,9 @@ type LoginHandler = (values: LoginFormValues) => Promise<void> | void;
 
 interface LoginFormProps {
   onSubmit: LoginHandler;
+  onResetPassword?: () => void;
 }
-export const LoginForm = ({ onSubmit }: LoginFormProps) => {
+export const LoginForm = ({ onSubmit, onResetPassword }: LoginFormProps) => {
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
@@ -41,6 +42,19 @@ export const LoginForm = ({ onSubmit }: LoginFormProps) => {
       <Button type="submit" mt="sm">
         Sign In
       </Button>
+      {
+        <Anchor
+          size="sm"
+          mt={4}
+          style={{
+            display: "block",
+            textAlign: "right",
+          }}
+          onClick={() => onResetPassword?.()}
+        >
+          Forgot password?
+        </Anchor>
+      }
     </form>
   );
 };
