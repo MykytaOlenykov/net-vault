@@ -1,6 +1,7 @@
 import { Stack, NavLink } from "@mantine/core";
 import { Link, useLocation } from "react-router";
 import { navItems } from "../../../shared/constants";
+import classes from "./Sidebar.module.css";
 
 export const Sidebar = () => {
   const location = useLocation();
@@ -20,22 +21,9 @@ export const Sidebar = () => {
               label={item.label}
               leftSection={<Icon size={20} />}
               active={isActive}
-              styles={(theme) => ({
-                root: {
-                  color: isActive ? theme.white : theme.colors.gray[4],
-                  backgroundColor: isActive
-                    ? theme.colors.violet[6]
-                    : "transparent",
-                  borderRadius: theme.radius.md,
-                  "&:hover": {
-                    backgroundColor: theme.colors.violet[6],
-                    color: theme.white,
-                  },
-                },
-                label: {
-                  fontSize: theme.fontSizes.sm,
-                },
-              })}
+              className={classes.link}
+              classNames={{ label: classes.linkLabel }}
+              data-active={isActive || undefined}
             />
           );
         })}

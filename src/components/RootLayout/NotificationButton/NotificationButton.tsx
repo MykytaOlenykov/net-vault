@@ -12,10 +12,6 @@ export const NotificationButton = () => {
         root: {
           color: theme.colors.gray[4],
           position: "relative",
-          "&:hover": {
-            backgroundColor: theme.colors.dark[7],
-            color: theme.white,
-          },
         },
       })}
     >
@@ -34,4 +30,3 @@ export const NotificationButton = () => {
     </ActionIcon>
   );
 };
-
