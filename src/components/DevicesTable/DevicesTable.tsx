@@ -1,5 +1,7 @@
+import { useNavigate } from "react-router";
 import { Table } from "@mantine/core";
 import { deviceTableHeaderMap } from "../../shared/constants/constants";
+
 type Device = {
   id: number;
   name: string;
@@ -18,8 +20,18 @@ interface DevicesTableProps {
 }
 
 export const DevicesTable = ({ mockDevices }: DevicesTableProps) => {
+  const navigate = useNavigate();
   const rows = mockDevices.map((element) => (
-    <Table.Tr key={element.id}>
+    <Table.Tr
+      key={element.id}
+      onClick={() => navigate(`devices/${element.id}`)}
+      style={{
+        cursor: "pointer",
+        transition: "background 0.15s ease",
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.background = "#866c6cff")}
+      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+    >
       {Object.values(deviceTableHeaderMap).map((keysName) => {
         const key = keysName as keyof Device;
         const value = element[key];
@@ -42,6 +54,7 @@ export const DevicesTable = ({ mockDevices }: DevicesTableProps) => {
             ))}
           </Table.Tr>
         </Table.Thead>
+        <></>
         <Table.Tbody>{rows}</Table.Tbody>
       </Table>
     </Table.ScrollContainer>
