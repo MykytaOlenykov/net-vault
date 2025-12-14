@@ -1,17 +1,5 @@
 import { DevicesTable } from "../../components/DevicesTable";
-type Device = {
-  id: number;
-  name: string;
-  ip_address: string;
-  port: number;
-  device_type: string;
-  tags: string[];
-  backup_schedule: string;
-  last_backup_at: string | null;
-  last_backup_status: string;
-  is_active: boolean;
-  created_at: string;
-};
+import type { Device } from "../../components/DevicesTable/DevicesTable";
 const mockDevices: Device[] = [
   {
     id: 1,
@@ -66,10 +54,11 @@ const mockDevices: Device[] = [
     created_at: "2024-08-11T17:50:00Z",
   },
 ];
+
 export default function DevicesPage() {
   return (
     <div style={{ width: "100%" }}>
-      <DevicesTable mockDevices={mockDevices} />
+      <DevicesTable items={mockDevices} />
     </div>
   );
 }
