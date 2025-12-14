@@ -37,7 +37,10 @@
   transition: opacity 0.2s ease;
 }
 
+.avatar span {
+  color: var(--mantine-color-violet-6) !important;
+}
+
 .button:hover .avatar {
   opacity: 0.8;
 }
-
