@@ -11,7 +11,7 @@ import "@mantine/core/styles.css";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
-      <MantineProvider theme={theme}>
+      <MantineProvider theme={theme} defaultColorScheme="dark">
         <App />
       </MantineProvider>
     </BrowserRouter>
