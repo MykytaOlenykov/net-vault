@@ -1,0 +1,14 @@
+.auth_layout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  min-width: 300px;
+  min-height: 600px;
+
+  /* === gradient === */
+  min-height: 100vh;
+  padding: 1rem;
+
+  background: linear-gradient(135deg, #0f0f14 0%, #1a1b26 50%, #24253a 100%);
+}

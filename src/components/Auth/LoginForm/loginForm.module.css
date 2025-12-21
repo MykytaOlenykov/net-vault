@@ -1,0 +1,31 @@
+/* loginForm.module.css */
+.inputWrapper {
+  margin-bottom: 1rem;
+}
+
+.input {
+  background-color: #24253a;
+  border: 1px solid #373854;
+  color: white;
+}
+
+.label {
+  color: #d1d5db;
+  margin-bottom: 0.5rem;
+}
+
+.error {
+  color: #f87171; /* червоний для помилок */
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.button {
+  height: 42px;
+  background: linear-gradient(to right, #8b5cf6, #4f46e5);
+  color: white;
+}
+
+.button:hover {
+  background: linear-gradient(to right, #7c3aed, #4338ca);
+}
