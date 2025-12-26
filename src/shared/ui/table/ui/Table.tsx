@@ -14,58 +14,58 @@ import {
 
 import type { TableColumn } from "../types/table-column";
 
-interface TableProps<IData extends object> {
-  idKey?: keyof IData | "id";
+interface TableProps<IData extends { id: React.Key }> {
   items: IData[];
   columns: TableColumn<IData>[];
-
-  title?: React.ReactNode;
 
   totalPages?: number;
   activePage?: number;
   setPage?: (page: number) => void;
+  onRowClick?: (item: IData) => void;
 }
 
-export function Table<IData extends object>({
-  idKey = "id",
+export function Table<IData extends { id: React.Key }>({
   items,
   columns,
-
   totalPages,
   activePage,
   setPage,
+  onRowClick,
 }: TableProps<IData>) {
-  const rows = items.map((item) => (
-    <TableTr key={item[idKey as keyof IData] as React.Key}>
-      {columns.map(({ key, row }) => (
-        <TableTd key={key as React.Key}>
-          {(row?.(item) ?? item[key]) as React.ReactNode}
-        </TableTd>
-      ))}
-    </TableTr>
-  ));
-
-  const cols = columns.map(({ key, header }) => (
-    <TableTh key={key as React.Key}>{header}</TableTh>
-  ));
-
   return (
     <Stack gap="xs">
       <TableScrollContainer minWidth="100%">
-        <MTable
-          style={{
-            width: "max-content",
-            minWidth: "100%",
-          }}
-          highlightOnHover
-          striped
-          verticalSpacing="xs"
-        >
+        <MTable highlightOnHover striped={false} verticalSpacing="xs">
           <TableThead>
-            <TableTr>{cols}</TableTr>
+            <TableTr>
+              {columns.map((col) => (
+                <TableTh key={col.key}>{col.header}</TableTh>
+              ))}
+            </TableTr>
           </TableThead>
 
-          <TableTbody>{rows}</TableTbody>
+          <TableTbody>
+            {items.map((item) => (
+              <TableTr
+                key={item.id}
+                onClick={() => onRowClick?.(item)}
+                style={{
+                  cursor: onRowClick ? "pointer" : "default",
+                }}
+              >
+                {columns.map((col) => (
+                  <TableTd
+                    onClick={
+                      col.stopRowClick ? (e) => e.stopPropagation() : undefined
+                    }
+                    key={col.key}
+                  >
+                    {col.render(item)}
+                  </TableTd>
+                ))}
+              </TableTr>
+            ))}
+          </TableTbody>
 
           <TableTfoot>
             <TableTr />
@@ -73,8 +73,8 @@ export function Table<IData extends object>({
         </MTable>
       </TableScrollContainer>
 
-      <Flex justify="center">
-        {totalPages && (
+      {totalPages && (
+        <Flex justify="center">
           <Pagination
             total={totalPages}
             value={activePage}
@@ -82,8 +82,8 @@ export function Table<IData extends object>({
             radius="xl"
             size="md"
           />
-        )}
-      </Flex>
+        </Flex>
+      )}
     </Stack>
   );
 }

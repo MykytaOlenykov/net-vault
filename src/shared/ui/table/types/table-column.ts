@@ -1,5 +1,6 @@
-export interface TableColumn<IData extends object> {
-  key: keyof IData;
+export interface TableColumn<IData> {
+  key: string;
   header: React.ReactNode;
-  row?: (row: IData) => React.ReactNode;
+  render: (row: IData) => React.ReactNode;
+  stopRowClick?: boolean;
 }
