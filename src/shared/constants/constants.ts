@@ -10,3 +10,5 @@ export const deviceTableHeaderMap: Record<string, string> = {
   Active: "is_active",
   "Created At": "created_at",
 };
+
+export const SEARCH_FIELDS = ["name", "ip_address", "tags"];
