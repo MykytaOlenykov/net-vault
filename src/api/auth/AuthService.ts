@@ -1,4 +1,4 @@
-import type ApiClient from "../ApiClient";
+import ApiClient from "../ApiClient";
 
 export interface UserProfile {
   id: string;
@@ -6,33 +6,32 @@ export interface UserProfile {
   createdAt: string;
   updatedAt: string;
 }
+
 export interface LoginResponse {
-  user: UserProfile;
-  token: string;
+  data: {
+    user: UserProfile;
+    token: string;
+  };
 }
 
-class AuthService {
-  private api: ApiClient;
-
-  constructor(api: ApiClient) {
-    this.api = api;
-  }
-
+class AuthService extends ApiClient {
   async login(email: string, password: string): Promise<LoginResponse> {
-    const response = await this.api.post<LoginResponse>("/auth/login", {
+    const response = await this.post<LoginResponse>("/auth/login", {
       email,
       password,
     });
-    sessionStorage.setItem("accessToken", response.data.token);
+    sessionStorage.setItem("accessToken", response.data.data.token);
     return response.data;
   }
+
   async logout(): Promise<void> {
     sessionStorage.removeItem("accessToken");
   }
+
   async getProfile(): Promise<UserProfile> {
-    const response = await this.api.get<UserProfile>("/user/profile");
+    const response = await this.get<UserProfile>("/user/profile");
     return response.data;
   }
 }
 
-export default AuthService;
+export const authService = new AuthService();

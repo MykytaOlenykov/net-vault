@@ -6,6 +6,7 @@ import { useSearch } from "../../devices/hooks/useSearch";
 import type { Device } from "../../devices/types/device";
 import { SearchBar } from "../../shared/ui/searchBar";
 import style from "./DevicePage.module.css";
+import { useGetDevices } from "../../shared/hooks/device/useGetDevices";
 
 const mockDevices: Device[] = [
   {
@@ -97,6 +98,8 @@ export default function DevicesPage() {
     deviceTypeOptions,
     filteredItems: filteredDevices,
   } = useDevicesFilter(searchedDevices);
+
+  const { data } = useGetDevices();
 
   return (
     <div className={style.device_page}>
