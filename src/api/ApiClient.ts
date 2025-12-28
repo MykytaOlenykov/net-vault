@@ -4,9 +4,9 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 class ApiClient {
   private instance: AxiosInstance;
 
-  constructor(baseURL: string) {
+  constructor() {
     this.instance = axios.create({
-      baseURL,
+      baseURL: import.meta.env.VITE_API_BASE_URL,
     });
 
     this.setupInterceptors();
