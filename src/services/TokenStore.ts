@@ -1,4 +1,4 @@
-class AuthService {
+class TokenStore {
   setToken(token: string) {
     sessionStorage.setItem("accessToken", token);
   }
@@ -12,4 +12,4 @@ class AuthService {
   }
 }
 
-export default new AuthService();
+export const tokenStore = new TokenStore();
