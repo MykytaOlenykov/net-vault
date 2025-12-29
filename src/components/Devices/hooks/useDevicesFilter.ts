@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Device } from "../types/device";
-import type { DeviceStatusFilter } from "../components/DeviceFilters";
+import type { DeviceStatusFilter } from "../DeviceFilters";
 
 export function useDevicesFilter(items: Device[]) {
   const [type, setType] = useState<string>("all");

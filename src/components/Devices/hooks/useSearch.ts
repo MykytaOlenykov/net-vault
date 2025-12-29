@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Device } from "../types/device";
-import { SEARCH_FIELDS } from "../../shared/constants/constants";
+import { SEARCH_FIELDS } from "../../../shared/constants/constants";
 
 export function useSearch(items: Device[]) {
   const [search, setSearch] = useState("");
@@ -28,3 +28,4 @@ export function useSearch(items: Device[]) {
     filteredItems,
   };
 }
+

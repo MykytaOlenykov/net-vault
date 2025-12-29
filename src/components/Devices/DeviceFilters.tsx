@@ -1,6 +1,6 @@
 import { Group } from "@mantine/core";
 import { SelectFilter } from "../../shared/ui/filters";
-import type { StatusBackup } from "../types/device";
+import type { StatusBackup } from "./types";
 
 import type { ComboboxItem } from "@mantine/core";
 

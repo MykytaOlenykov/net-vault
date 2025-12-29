@@ -1,7 +1,7 @@
 import type { TableColumn } from "../../shared/ui/table/types/table-column";
-import type { Device } from "../types/device";
+import type { Device } from "./types";
 
-import { DeviceActionsMenu } from "../components/DeviceActionsMenu";
+import { DeviceActionsMenu } from "./DeviceActionsMenu";
 import { DeviceStatusCell } from "./DeviceStatusCell";
 import { Badge } from "@mantine/core";
 
