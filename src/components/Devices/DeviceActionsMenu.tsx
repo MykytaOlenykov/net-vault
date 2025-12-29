@@ -1,5 +1,3 @@
-import { Text } from "@mantine/core";
-import { modals } from "@mantine/modals";
 import {
   IconEye,
   IconRefresh,
@@ -7,26 +5,12 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { ActionsMenu } from "../../shared/ui/ActionMenu/ActionMenu";
-import type { Device } from "../types/device";
-import { useNavigate } from "react-router";
+import type { Device } from "./types";
+import { useDeviceActions } from "./hooks/useDeviceActions";
 
 export function DeviceActionsMenu({ device }: { device: Device }) {
-  const navigate = useNavigate();
-  const handleRemove = () => {
-    modals.openConfirmModal({
-      title: "Remove device",
-      children: (
-        <Text size="sm">
-          Are you sure you want to remove <b>{device.name}</b>?
-        </Text>
-      ),
-      labels: { confirm: "Remove", cancel: "Cancel" },
-      confirmProps: { color: "red" },
-      onConfirm: () => {
-        console.log("Device removed");
-      },
-    });
-  };
+  const { viewDetails, triggerBackup, downloadConfig, removeDevice } =
+    useDeviceActions(device);
 
   return (
     <ActionsMenu
@@ -35,28 +19,26 @@ export function DeviceActionsMenu({ device }: { device: Device }) {
           key: "view",
           label: "View Details",
           icon: <IconEye size={16} />,
-          onClick: () => {
-            navigate(`/devices/${device.id}`);
-          },
+          onClick: viewDetails,
         },
         {
           key: "trigger",
           label: "Trigger Backup",
           icon: <IconRefresh size={16} />,
-          onClick: () => {},
+          onClick: triggerBackup,
         },
         {
           key: "download",
           label: "Download Config",
           icon: <IconDownload size={16} />,
-          onClick: () => {},
+          onClick: downloadConfig,
         },
         {
           key: "remove",
           label: "Remove Device",
           icon: <IconTrash size={16} />,
           color: "red",
-          onClick: handleRemove,
+          onClick: removeDevice,
         },
       ]}
     />

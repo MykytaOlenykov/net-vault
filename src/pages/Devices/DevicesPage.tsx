@@ -1,12 +1,13 @@
-import { Flex, Paper, Stack } from "@mantine/core";
-import { DevicesTable } from "../../components/DevicesTable";
-import { DevicesFilters } from "../../devices/components/DeviceFilters";
-import { useDevicesFilter } from "../../devices/hooks/useDevicesFilter";
-import { useSearch } from "../../devices/hooks/useSearch";
-import type { Device } from "../../devices/types/device";
+import { Paper, Stack } from "@mantine/core";
+import {
+  DevicesTable,
+  DevicesFilters,
+  useDevicesFilter,
+  useSearch,
+  type Device,
+} from "../../components/Devices";
 import { SearchBar } from "../../shared/ui/searchBar";
 import style from "./DevicePage.module.css";
-import { useGetDevices } from "../../shared/hooks/device/useGetDevices";
 
 const mockDevices: Device[] = [
   {
@@ -99,7 +100,7 @@ export default function DevicesPage() {
     filteredItems: filteredDevices,
   } = useDevicesFilter(searchedDevices);
 
-  const { data } = useGetDevices();
+  // const { data } = useGetDevices(); // TODO: Use API data when ready
 
   return (
     <div className={style.device_page}>

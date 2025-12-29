@@ -1,5 +1,5 @@
 import { Badge } from "@mantine/core";
-import type { StatusBackup } from "../types/device";
+import type { StatusBackup } from "./types";
 
 export function DeviceStatusCell({ status }: { status: StatusBackup }) {
   const statusColorMap = {
