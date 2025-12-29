@@ -11,3 +11,4 @@ export type Device = {
   last_backup_status: StatusBackup;
   created_at: string;
 };
+
