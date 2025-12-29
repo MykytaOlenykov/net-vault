@@ -1,0 +1,7 @@
+.actionIcon {
+  border-radius: var(--mantine-radius-md);
+}
+
+.actionIcon:hover {
+  background-color: var(--mantine-color-dark-4);
+}

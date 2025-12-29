@@ -1,1 +1,1 @@
-export { DevicesTable } from "./DevicesTable";
+export { DevicesTable } from "../../devices/components/DevicesTable";

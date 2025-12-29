@@ -20,9 +20,6 @@ export default function LoginPage() {
 
   const handleLogin = async (values: LoginFormValues) => {
     const response = await login(values.email, values.password);
-    if (response?.user) {
-      navigate("/");
-    }
   };
 
   const handleOtpSubmit = (values: OtpFormValues) => {
