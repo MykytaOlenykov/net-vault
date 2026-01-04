@@ -1,0 +1,107 @@
+[
+  {
+    "id": "b1cisco-0001",
+    "device_id": "8d275b45-e677-4772-afaf-98110790aa92",
+    "version_number": 4,
+    "status": "SUCCESS",
+    "started_at": "2026-01-03T01:00:00Z",
+    "finished_at": "2026-01-03T01:00:07Z",
+    "config_text": "hostname DEVICE_CISCO\ninterface Gi0/1\n description Uplink\n no shutdown\n!",
+    "config_hash": "cisco-hash-004",
+    "changed_lines": 5,
+    "is_duplicate": false,
+    "error": null
+  },
+  {
+    "id": "b1cisco-0002",
+    "device_id": "8d275b45-e677-4772-afaf-98110790aa92",
+    "version_number": 3,
+    "status": "SUCCESS",
+    "started_at": "2026-01-02T01:00:00Z",
+    "finished_at": "2026-01-02T01:00:06Z",
+    "config_text": "hostname DEVICE_CISCO\ninterface Gi0/1\n no shutdown\n!",
+    "config_hash": "cisco-hash-003",
+    "changed_lines": 2,
+    "is_duplicate": false,
+    "error": null
+  },
+  {
+    "id": "b1cisco-0003",
+    "device_id": "8d275b45-e677-4772-afaf-98110790aa92",
+    "version_number": 2,
+    "status": "FAILED",
+    "started_at": "2026-01-01T01:00:00Z",
+    "finished_at": null,
+    "config_text": "",
+    "config_hash": "cisco-hash-002",
+    "changed_lines": 0,
+    "is_duplicate": false,
+    "error": "Authentication failed"
+  },
+  {
+    "id": "b1cisco-0004",
+    "device_id": "8d275b45-e677-4772-afaf-98110790aa92",
+    "version_number": 1,
+    "status": "SUCCESS",
+    "started_at": "2025-12-31T01:00:00Z",
+    "finished_at": "2025-12-31T01:00:05Z",
+    "config_text": "hostname DEVICE_CISCO\n!",
+    "config_hash": "cisco-hash-001",
+    "changed_lines": 1,
+    "is_duplicate": false,
+    "error": null
+  },
+
+  {
+    "id": "b2juniper-0001",
+    "device_id": "effc79f9-0ac7-4798-b9bc-619124e493f9",
+    "version_number": 4,
+    "status": "SUCCESS",
+    "started_at": "2026-01-03T02:00:00Z",
+    "finished_at": "2026-01-03T02:00:09Z",
+    "config_text": "system {\n host-name DEVICE_JUNIPER;\n}\ninterfaces {\n ge-0/0/0 {\n  unit 0 {\n   family inet;\n  }\n }\n}",
+    "config_hash": "juniper-hash-004",
+    "changed_lines": 6,
+    "is_duplicate": false,
+    "error": null
+  },
+  {
+    "id": "b2juniper-0002",
+    "device_id": "effc79f9-0ac7-4798-b9bc-619124e493f9",
+    "version_number": 3,
+    "status": "SUCCESS",
+    "started_at": "2026-01-02T02:00:00Z",
+    "finished_at": "2026-01-02T02:00:08Z",
+    "config_text": "system {\n host-name DEVICE_JUNIPER;\n}\ninterfaces {\n ge-0/0/0;\n}",
+    "config_hash": "juniper-hash-003",
+    "changed_lines": 3,
+    "is_duplicate": false,
+    "error": null
+  },
+  {
+    "id": "b2juniper-0003",
+    "device_id": "effc79f9-0ac7-4798-b9bc-619124e493f9",
+    "version_number": 2,
+    "status": "SUCCESS",
+    "started_at": "2026-01-01T02:00:00Z",
+    "finished_at": "2026-01-01T02:00:07Z",
+    "config_text": "system {\n host-name DEVICE_JUNIPER;\n}",
+    "config_hash": "juniper-hash-002",
+    "changed_lines": 1,
+    "is_duplicate": true,
+    "error": null
+  },
+  {
+    "id": "b2juniper-0004",
+    "device_id": "effc79f9-0ac7-4798-b9bc-619124e493f9",
+    "version_number": 1,
+    "status": "FAILED",
+    "started_at": "2025-12-31T02:00:00Z",
+    "finished_at": null,
+    "config_text": "",
+    "config_hash": "juniper-hash-001",
+    "changed_lines": 0,
+    "is_duplicate": false,
+    "error": "Connection timeout"
+  }
+]

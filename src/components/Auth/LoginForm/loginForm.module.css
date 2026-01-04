@@ -1,31 +1,100 @@
-/* loginForm.module.css */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
 .inputWrapper {
-  margin-bottom: 1rem;
 }
 
-.input {
-  background-color: #24253a;
-  border: 1px solid #373854;
-  color: white;
-}
-
+/* Label */
 .label {
-  color: #d1d5db;
-  margin-bottom: 0.5rem;
+  color: var(--mantine-color-dark-0);
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
+/* Input */
+.input {
+  height: 44px;
+  padding: 0 1rem;
+  border-radius: var(--mantine-radius-md);
+
+  background-color: var(--mantine-color-dark-6);
+  border: 1px solid var(--mantine-color-dark-5);
+
+  color: var(--mantine-color-dark-0);
+  font-size: 0.875rem;
+
+  transition: border-color 0.15s ease, box-shadow 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.input::placeholder {
+  color: var(--mantine-color-dark-2);
+}
+
+.input:hover {
+  border-color: var(--mantine-color-dark-4);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--mantine-color-violet-5);
+  box-shadow: 0 0 0 1px var(--mantine-color-violet-5);
+}
+
+/* Error */
 .error {
-  color: #f87171; /* червоний для помилок */
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
+  color: var(--mantine-color-red-5);
+  font-size: 0.75rem;
 }
 
+/* Button */
 .button {
-  height: 42px;
-  background: linear-gradient(to right, #8b5cf6, #4f46e5);
-  color: white;
+  height: 46px;
+  margin-top: 0.5rem;
+
+  border-radius: var(--mantine-radius-md);
+  font-size: 0.95rem;
+  font-weight: 600;
+
+  color: var(--mantine-color-white);
+  background: linear-gradient(
+    135deg,
+    var(--mantine-color-violet-5),
+    var(--mantine-color-violet-6)
+  );
 }
 
 .button:hover {
-  background: linear-gradient(to right, #7c3aed, #4338ca);
+  background: linear-gradient(
+    135deg,
+    var(--mantine-color-violet-6),
+    var(--mantine-color-violet-7)
+  );
+  box-shadow: 0 6px 18px rgba(139, 92, 246, 0.35);
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+/* Forgot password */
+.forgot {
+  background: none;
+  border: none;
+  margin-top: 1rem;
+  align-self: center;
+
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--mantine-color-violet-4);
+  cursor: pointer;
+}
+
+.forgot:hover {
+  color: var(--mantine-color-violet-5);
+  text-decoration: underline;
 }

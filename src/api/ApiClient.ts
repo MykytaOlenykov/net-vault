@@ -1,12 +1,17 @@
 import axios from "axios";
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+if (!apiBaseUrl) {
+  throw new Error("VITE_API_BASE_URL is not defined");
+}
+
 class ApiClient {
-  private instance: AxiosInstance;
+  protected instance: AxiosInstance;
 
   constructor() {
     this.instance = axios.create({
-      baseURL: import.meta.env.VITE_API_BASE_URL,
+      baseURL: apiBaseUrl,
     });
 
     this.setupInterceptors();

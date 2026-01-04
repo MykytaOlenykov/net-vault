@@ -1,14 +1,16 @@
 class TokenStore {
-  setToken(token: string) {
-    sessionStorage.setItem("accessToken", token);
+  private key = "accessToken";
+
+  get(): string | null {
+    return sessionStorage.getItem(this.key);
   }
 
-  getToken() {
-    return sessionStorage.getItem("accessToken");
+  set(token: string) {
+    sessionStorage.setItem(this.key, token);
   }
 
-  clearToken() {
-    sessionStorage.removeItem("accessToken");
+  clear() {
+    sessionStorage.removeItem(this.key);
   }
 }
 

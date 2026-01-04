@@ -1,20 +1,20 @@
 import { Menu, Avatar, UnstyledButton } from "@mantine/core";
 import { useState } from "react";
-import { useNavigate } from "react-router";
 import {
   IconChevronDown,
   IconChevronUp,
   IconLogout,
 } from "@tabler/icons-react";
+
 import classes from "./AvatarMenu.module.css";
+import { useAuth } from "../../Auth/hooks/AuthContext";
 
 export const AvatarMenu = () => {
   const [menuOpened, setMenuOpened] = useState(false);
-  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    // TODO: Add logout logic here
-    navigate("/login");
+    logout();
   };
 
   return (
