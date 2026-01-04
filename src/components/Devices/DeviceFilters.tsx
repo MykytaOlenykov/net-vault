@@ -1,45 +1,40 @@
 import { Group } from "@mantine/core";
 import { SelectFilter } from "../../shared/ui/filters";
-import type { StatusBackup } from "./types";
-
-import type { ComboboxItem } from "@mantine/core";
-
-export type DeviceStatusFilter = "all" | StatusBackup;
+import type { DeviceStatus } from "./types/device";
+import type { FilterOption } from "./types/device";
+export type DeviceStatusFilter = "all" | DeviceStatus;
 
 export interface DevicesFiltersProps {
-  type: string;
-  status: DeviceStatusFilter;
-  deviceTypeOptions: ComboboxItem[];
+  vendor: string;
+  status: string;
+  vendorsOptions: FilterOption[];
+  statusOptions: FilterOption[];
 
-  onTypeChange: (value: string) => void;
-  onStatusChange: (value: DeviceStatusFilter) => void;
+  onVendorChange: (value: string) => void;
+  onStatusChange: (value: string) => void;
 }
 
 export function DevicesFilters({
-  type,
+  vendor,
   status,
-  deviceTypeOptions,
-  onTypeChange,
+  vendorsOptions,
+  statusOptions,
+  onVendorChange,
   onStatusChange,
 }: DevicesFiltersProps) {
   return (
     <Group mb="md">
       <SelectFilter
-        label="Device Type"
-        value={type}
-        data={deviceTypeOptions}
-        onChange={onTypeChange}
+        label="Vendor"
+        value={vendor}
+        data={vendorsOptions}
+        onChange={onVendorChange}
       />
 
       <SelectFilter
         label="Status"
         value={status}
-        data={[
-          { value: "all", label: "All" },
-          { value: "success", label: "Success" },
-          { value: "warning", label: "Warning" },
-          { value: "failed", label: "Failed" },
-        ]}
+        data={statusOptions}
         onChange={onStatusChange}
       />
     </Group>

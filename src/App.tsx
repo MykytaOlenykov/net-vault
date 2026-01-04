@@ -1,6 +1,7 @@
 import { lazy } from "react";
 import { Route, Routes } from "react-router";
 import { RootLayout } from "./components/RootLayout";
+import { PrivateRoute } from "./routes/PrivateRoute";
 
 const LoginPage = lazy(() => import("./pages/Login"));
 const UsersPage = lazy(() => import("./pages/Users"));
@@ -11,10 +12,13 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/" element={<RootLayout />}>
-        <Route path="/users" element={<UsersPage />} />
-        <Route path="/devices" element={<DevicesPage />} />
-        <Route path="/devices/:deviceId" element={<DeviceDetailsPage />} />
+
+      <Route element={<PrivateRoute />}>
+        <Route path="/" element={<RootLayout />}>
+          <Route path="users" element={<UsersPage />} />
+          <Route path="devices" element={<DevicesPage />} />
+          <Route path="devices/:deviceId" element={<DeviceDetailsPage />} />
+        </Route>
       </Route>
     </Routes>
   );

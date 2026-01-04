@@ -1,12 +1,13 @@
 import { PasswordInput, TextInput, Button, Text } from "@mantine/core";
-import z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import z from "zod";
+
 import style from "./loginForm.module.css";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email" }),
-  password: z.string().nonempty({ message: "Password is required" }),
+  email: z.email({ message: "Invalid email address" }),
+  password: z.string().min(1, { message: "Password is required" }),
 });
 
 export type LoginFormValues = z.infer<typeof loginSchema>;
@@ -17,57 +18,64 @@ interface LoginFormProps {
   onSubmit: LoginHandler;
   onResetPassword?: () => void;
   loading?: boolean;
-  error: string | null;
 }
 
-export const LoginForm = ({ onSubmit, loading, error }: LoginFormProps) => {
+export const LoginForm = ({
+  onSubmit,
+  onResetPassword,
+  loading,
+}: LoginFormProps) => {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
   return (
     <form
+      noValidate
       onSubmit={form.handleSubmit(onSubmit)}
-      style={{ display: "flex", flexDirection: "column" }}
+      className={style.form}
     >
       <TextInput
-        mt="sm"
-        label="Email"
+        label="Email Address"
         placeholder="admin@netvault.io"
-        required={true}
         {...form.register("email")}
         error={form.formState.errors.email?.message}
         classNames={{
+          root: style.inputWrapper,
           input: style.input,
           label: style.label,
           error: style.error,
-          root: style.inputWrapper,
         }}
       />
 
       <PasswordInput
-        mt="sm"
         label="Password"
         placeholder="••••••••"
-        required={true}
         {...form.register("password")}
         error={form.formState.errors.password?.message}
         classNames={{
+          root: style.inputWrapper,
           input: style.input,
           label: style.label,
           error: style.error,
-          root: style.inputWrapper,
         }}
       />
 
-      <Button type="submit" mt="sm" disabled={loading} className={style.button}>
-        {loading ? "Signing in..." : "Log In"}
+      <Button type="submit" loading={loading} className={style.button}>
+        Log In
       </Button>
 
-      {error && (
-        <Text color="red" size="sm" mt="sm">
-          {error}
+      {onResetPassword && (
+        <Text
+          component="button"
+          onClick={onResetPassword}
+          className={style.forgot}
+        >
+          Forgot password?
         </Text>
       )}
     </form>

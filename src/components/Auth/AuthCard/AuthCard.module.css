@@ -1,4 +1,7 @@
 .card {
+  flex-direction: column;
+  row-gap: 2.5rem;
+  align-items: center;
   border: 1px solid rgba(139, 92, 246, 0.25);
-  background-color: transparent;
+  background-color: var(--mantine-color-body);
 }
