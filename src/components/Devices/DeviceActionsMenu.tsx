@@ -5,8 +5,8 @@ import {
   IconTrash,
 } from "@tabler/icons-react";
 import { ActionsMenu } from "../../shared/ui/ActionMenu/ActionMenu";
-import type { Device } from "./types";
-import { useDeviceActions } from "./hooks/useDeviceActions";
+import type { Device } from "./types/device";
+import { useDeviceActions } from "./hooks/device/useDeviceActions";
 
 export function DeviceActionsMenu({ device }: { device: Device }) {
   const { viewDetails, triggerBackup, downloadConfig, removeDevice } =

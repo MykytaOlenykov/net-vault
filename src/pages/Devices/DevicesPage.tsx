@@ -1,125 +1,73 @@
-import { Paper, Stack } from "@mantine/core";
+import { Paper, Stack, Group, Button } from "@mantine/core";
+import { IconPlus } from "@tabler/icons-react";
+import { useMemo } from "react";
+import { useDisclosure } from "@mantine/hooks";
+
 import {
   DevicesTable,
   DevicesFilters,
   useDevicesFilter,
   useSearch,
-  type Device,
 } from "../../components/Devices";
 import { SearchBar } from "../../shared/ui/searchBar";
+import { useGetDevices } from "../../components/Devices/hooks/device/useGetDevices";
+import { DeviceModal } from "../../components/Devices/DeviceModal";
 import style from "./DevicePage.module.css";
-
-const mockDevices: Device[] = [
-  {
-    id: 1,
-    name: "Core-SW-01",
-    ip_address: "10.0.10.1",
-    port: 22,
-    device_type: "Switch",
-    tags: ["core", "dc1"],
-    backup_schedule: "daily 02:00",
-    last_backup_at: "2025-02-10T02:00:00Z",
-    last_backup_status: "success",
-    created_at: "2024-12-01T11:20:00Z",
-  },
-  {
-    id: 2,
-    name: "Access-SW-15",
-    ip_address: "10.0.20.15",
-    port: 22,
-    device_type: "Router",
-    tags: ["access", "floor-2"],
-    backup_schedule: "daily 03:00",
-    last_backup_at: "2025-02-10T03:00:00Z",
-    last_backup_status: "warning",
-    created_at: "2024-11-18T09:13:00Z",
-  },
-  {
-    id: 3,
-    name: "Router-R1",
-    ip_address: "192.168.1.1",
-    port: 22,
-    device_type: "Router",
-    tags: ["branch-a"],
-    backup_schedule: "weekly Mon",
-    last_backup_at: "2025-02-03T01:00:00Z",
-    last_backup_status: "failed",
-    created_at: "2024-10-03T14:40:00Z",
-  },
-  {
-    id: 4,
-    name: "SW-Lab-05",
-    ip_address: "172.16.5.10",
-    port: 23,
-    device_type: "Switch",
-    tags: ["lab"],
-    backup_schedule: "none",
-    last_backup_at: null,
-    last_backup_status: "failed",
-    created_at: "2024-08-11T17:50:00Z",
-  },
-  {
-    id: 5,
-    name: "SW-Lab-05",
-    ip_address: "172.16.5.10",
-    port: 23,
-    device_type: "Switch",
-    tags: ["lab"],
-    backup_schedule: "none",
-    last_backup_at: null,
-    last_backup_status: "failed",
-    created_at: "2024-08-11T17:50:00Z",
-  },
-  {
-    id: 6,
-    name: "SW-Lab-05",
-    ip_address: "172.16.5.10",
-    port: 23,
-    device_type: "Switch",
-    tags: ["lab"],
-    backup_schedule: "none",
-    last_backup_at: null,
-    last_backup_status: "failed",
-    created_at: "2024-08-11T17:50:00Z",
-  },
-];
+import { useDeviceFormOptions } from "../../components/Devices/hooks/device/useDeviceFormOptions";
 
 export default function DevicesPage() {
+  const [opened, { open, close }] = useDisclosure(false);
+
+  const { data: devices = [] } = useGetDevices();
+
+  const { deviceTypeSelectOptions, tagOptions } = useDeviceFormOptions();
   const {
     search,
     setSearch,
     filteredItems: searchedDevices,
-  } = useSearch(mockDevices);
+  } = useSearch(devices);
 
-  const {
-    type,
-    setType: onTypeChange,
-    status,
-    setStatus: onStatusChange,
-    deviceTypeOptions,
-    filteredItems: filteredDevices,
-  } = useDevicesFilter(searchedDevices);
+  const vendorFilterOptions = useMemo(
+    () => [{ value: "all", label: "All" }, ...deviceTypeSelectOptions],
+    [deviceTypeSelectOptions],
+  );
 
-  // const { data } = useGetDevices(); // TODO: Use API data when ready
+  const { vendor, setVendor, status, setStatus, statusOptions, filteredItems } =
+    useDevicesFilter(searchedDevices, vendorFilterOptions);
 
   return (
     <div className={style.device_page}>
-      <Paper p={"md"} withBorder>
+      <Paper p="md" withBorder>
         <Stack gap="md">
-          <SearchBar value={search} onSearch={setSearch} />
+          <Group justify="space-between">
+            <SearchBar value={search} onSearch={setSearch} />
+            <Button onClick={open} leftSection={<IconPlus size={16} />}>
+              Add device
+            </Button>
+          </Group>
 
           <DevicesFilters
-            type={type}
+            vendor={vendor}
             status={status}
-            deviceTypeOptions={deviceTypeOptions}
-            onTypeChange={onTypeChange}
-            onStatusChange={onStatusChange}
+            vendorsOptions={vendorFilterOptions}
+            statusOptions={statusOptions}
+            onVendorChange={setVendor}
+            onStatusChange={setStatus}
           />
         </Stack>
       </Paper>
-      <Paper p={"md"} withBorder>
-        <DevicesTable items={filteredDevices} />
+
+      <Paper p="md" withBorder>
+        <DevicesTable items={filteredItems} />
       </Paper>
+
+      <DeviceModal
+        opened={opened}
+        onClose={close}
+        mode="create"
+        deviceTypes={deviceTypeSelectOptions}
+        tagOptions={tagOptions}
+      />
     </div>
   );
 }

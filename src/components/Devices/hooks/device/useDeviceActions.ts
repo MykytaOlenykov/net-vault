@@ -1,9 +1,12 @@
 import { useNavigate } from "react-router";
-import { confirmDelete } from "../../../shared/ui/ConfirmDelete";
-import type { Device } from "../types/device";
+import { confirmDelete } from "../../../../shared/ui/ConfirmDelete";
+import type { Device } from "../../types/device";
+import { useDeleteDevice } from "./useDeleteDevice";
+import { notify } from "../../../../shared/helpers/notify";
 
 export function useDeviceActions(device: Device) {
   const navigate = useNavigate();
+  const { mutateAsync } = useDeleteDevice();
 
   const viewDetails = () => {
     navigate(`/devices/${device.id}`);
@@ -23,9 +26,13 @@ export function useDeviceActions(device: Device) {
     confirmDelete({
       title: "Remove device",
       itemName: device.name,
-      onConfirm: () => {
-        // TODO: Implement remove device logic
-        console.log("Device removed");
+      onConfirm: async () => {
+        try {
+          await mutateAsync(device.id);
+          notify.success(`Device ${device.name} deleted`);
+        } catch (error) {
+          notify.error(`Error delete device`);
+        }
       },
     });
   };

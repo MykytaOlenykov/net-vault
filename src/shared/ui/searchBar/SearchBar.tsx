@@ -1,4 +1,5 @@
 import { TextInput } from "@mantine/core";
+import { IconSearch } from "@tabler/icons-react";
 
 interface SearchBarProps {
   value: string;
@@ -11,8 +12,12 @@ export const SearchBar = ({ value, onSearch }: SearchBarProps) => {
     onSearch(newValue);
   };
   return (
-    <div className="w-full max-w-md mx-auto p-4">
-      <TextInput value={value} onChange={handleChange} placeholder="Search" />
-    </div>
+    <TextInput
+      style={{ flex: 1 }}
+      value={value}
+      leftSection={<IconSearch size={16} />}
+      onChange={handleChange}
+      placeholder="Search by name, IP or model"
+    />
   );
 };

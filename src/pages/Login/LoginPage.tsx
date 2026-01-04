@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AuthCard,
   AuthLayout,
@@ -8,22 +8,26 @@ import {
 } from "../..//components/Auth";
 import type { LoginFormValues } from "../../components/Auth/LoginForm/loginForm";
 import type { OtpFormValues } from "../../components/Auth/OtpForm/otpForm";
-import { useAuth } from "../../shared/hooks/useAuth";
+import { useAuth } from "../../components/Auth/hooks/AuthContext";
 import { useNavigate } from "react-router";
 import { Logo } from "../../components/RootLayout/Logo";
 
 export default function LoginPage() {
   const [otpSent, setOtpSent] = useState(false);
   const [showReset, setShowReset] = useState(false);
-  const { error, loading, login } = useAuth();
+  const { loading, login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  });
 
   const handleLogin = async (values: LoginFormValues) => {
-    const response = await login(values.email, values.password);
+    await login(values.email, values.password);
   };
 
   const handleOtpSubmit = (values: OtpFormValues) => {
-    alert("Login success!");
     setOtpSent(false);
   };
 
@@ -49,7 +53,6 @@ export default function LoginPage() {
             onSubmit={handleLogin}
             onResetPassword={handleResetPassword}
             loading={loading}
-            error={error}
           />
         ) : (
           <OtpForm onSubmit={handleOtpSubmit} />
