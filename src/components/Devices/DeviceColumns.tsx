@@ -1,16 +1,9 @@
 import type { TableColumn } from "../../shared/ui/table/types/table-column";
-import type { Device } from "./types";
-
+import type { Device } from "./types/device";
 import { DeviceActionsMenu } from "./DeviceActionsMenu";
-import { DeviceStatusCell } from "./DeviceStatusCell";
-import { Badge } from "@mantine/core";
+import { Badge, Flex, Text } from "@mantine/core";
 
 export const deviceColumns: TableColumn<Device>[] = [
-  {
-    key: "id",
-    header: "ID",
-    render: (d) => d.id,
-  },
   {
     key: "name",
     header: "Name",
@@ -21,28 +14,56 @@ export const deviceColumns: TableColumn<Device>[] = [
     header: "IP Address",
     render: (d) => (
       <Badge radius="sm" variant="light">
-        {d.ip_address}
+        {d.ipAddress}
       </Badge>
     ),
   },
   {
-    key: "device_type",
+    key: "port",
+    header: "Port",
+    render: (d) => <Text variant="light">{d.port}</Text>,
+  },
+  {
+    key: "deviceType",
     header: "Type",
     render: (d) => (
-      <Badge radius={"xl"} variant="light">
-        {d.device_type}
+      <Badge radius="xl" variant="light">
+        {d.deviceType.vendor}
       </Badge>
     ),
   },
   {
-    key: "last_backup_status",
+    key: "isActive",
     header: "Status",
-    render: (d) => <DeviceStatusCell status={d.last_backup_status} />,
+    render: ({ isActive }) => (
+      <Badge variant="light" color={isActive ? "teal" : "red"}>
+        {isActive ? "online" : "offline"}
+      </Badge>
+    ),
+  },
+  {
+    key: "tags",
+    header: "Tags",
+    render: (d) => (
+      <Flex gap={4} wrap={"wrap"}>
+        {d.deviceTags.length > 0
+          ? d.deviceTags.map(({ tag }, index) => (
+              <Badge key={tag.id || index} variant="light">
+                {tag.name}
+              </Badge>
+            ))
+          : "—"}
+      </Flex>
+    ),
   },
   {
     key: "last_backup_at",
     header: "Last Backup",
-    render: (d) => d.last_backup_at ?? "—",
+    render: (d) => (
+      <span style={{ color: "var(--mantine-color-dimmed)" }}>
+        {d.backupSchedule ?? "—"}
+      </span>
+    ),
   },
   {
     key: "actions",

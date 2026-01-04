@@ -1,3 +1,10 @@
+import { Container } from "@mantine/core";
+import { DeviceDetails } from "../../components/DeviceDetails";
+
 export default function DeviceDetailsPage() {
-  return <div>Device Details</div>;
+  return (
+    <Container size="xl">
+      <DeviceDetails />
+    </Container>
+  );
 }

@@ -1,0 +1,46 @@
+[
+  {
+    "id": "audit-cisco-001",
+    "user": "admin@netvault.io",
+    "action": "config.update",
+    "resource_type": "device",
+    "resource_id": "8d275b45-e677-4772-afaf-98110790aa92",
+    "details": { "changed_lines": 5 },
+    "ip_address": "192.168.0.10",
+    "user_agent": "Mozilla/5.0",
+    "created_at": "2026-01-03T01:01:00Z"
+  },
+  {
+    "id": "audit-cisco-002",
+    "user": "admin@netvault.io",
+    "action": "backup.run",
+    "resource_type": "device",
+    "resource_id": "8d275b45-e677-4772-afaf-98110790aa92",
+    "details": { "status": "FAILED" },
+    "ip_address": "192.168.0.10",
+    "user_agent": "Mozilla/5.0",
+    "created_at": "2026-01-01T01:00:10Z"
+  },
+  {
+    "id": "audit-juniper-001",
+    "user": "operator@netvault.io",
+    "action": "config.update",
+    "resource_type": "device",
+    "resource_id": "effc79f9-0ac7-4798-b9bc-619124e493f9",
+    "details": { "changed_lines": 6 },
+    "ip_address": "122.168.0.10",
+    "user_agent": "Mozilla/5.0",
+    "created_at": "2026-01-03T02:01:00Z"
+  },
+  {
+    "id": "audit-juniper-002",
+    "user": "admin@netvault.io",
+    "action": "config.restore",
+    "resource_type": "device",
+    "resource_id": "effc79f9-0ac7-4798-b9bc-619124e493f9",
+    "details": { "restored_version": 3 },
+    "ip_address": "122.168.0.10",
+    "user_agent": "Mozilla/5.0",
+    "created_at": "2026-01-02T03:10:00Z"
+  }
+]

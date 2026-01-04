@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router";
 import { Table } from "../../shared/ui/table";
-
 import { deviceColumns } from "./DeviceColumns";
-import type { Device } from "./types";
+import type { Device } from "./types/device";
 
 interface DevicesTableProps {
   items: Device[];

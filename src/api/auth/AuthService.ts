@@ -20,16 +20,13 @@ class AuthService extends ApiClient {
       email,
       password,
     });
-    sessionStorage.setItem("accessToken", response.data.data.token);
     return response.data;
   }
 
-  async logout(): Promise<void> {
-    sessionStorage.removeItem("accessToken");
-  }
+  async logout(): Promise<void> {}
 
   async getProfile(): Promise<UserProfile> {
-    const response = await this.get<UserProfile>("/user/profile");
+    const response = await this.get<UserProfile>("/auth/current");
     return response.data;
   }
 }
