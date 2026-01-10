@@ -1,0 +1,107 @@
+.splitContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.splitPanel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.codeViewer {
+  flex: 1;
+  overflow: auto;
+  max-height: 70vh;
+  background-color: var(--mantine-color-dark-9);
+  border-radius: var(--mantine-radius-md);
+  font-family: "Courier New", Courier, monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.codeContent {
+  min-height: 100%;
+}
+
+.codeLine {
+  display: flex;
+  min-height: 22px;
+  padding: 0;
+  border-left: 3px solid transparent;
+  transition: background-color 0.1s;
+}
+
+.codeLine:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.codeLine.removed {
+  background-color: rgba(239, 68, 68, 0.15);
+  border-left-color: rgba(239, 68, 68, 0.6);
+}
+
+.codeLine.added {
+  background-color: rgba(16, 185, 129, 0.15);
+  border-left-color: rgba(16, 185, 129, 0.6);
+}
+
+.codeLine.modified {
+  background-color: rgba(245, 158, 11, 0.15);
+  border-left-color: rgba(245, 158, 11, 0.6);
+}
+
+.codeLine.emptyLine {
+  min-height: 22px;
+  background-color: var(--mantine-color-dark-8);
+}
+
+.lineNumber {
+  display: inline-block;
+  min-width: 60px;
+  padding: 0 12px;
+  text-align: right;
+  color: var(--mantine-color-gray-6);
+  user-select: none;
+  background-color: var(--mantine-color-dark-8);
+  border-right: 1px solid var(--mantine-color-dark-6);
+  flex-shrink: 0;
+}
+
+.lineContent {
+  flex: 1;
+  padding: 0 12px;
+  color: var(--mantine-color-gray-3);
+  white-space: pre;
+  word-break: break-all;
+}
+
+.wordRemoved {
+  background-color: rgba(239, 68, 68, 0.4);
+  text-decoration: line-through;
+}
+
+.wordAdded {
+  background-color: rgba(16, 185, 129, 0.4);
+}
+
+/* Scrollbar styling */
+.codeViewer::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.codeViewer::-webkit-scrollbar-track {
+  background: var(--mantine-color-dark-8);
+}
+
+.codeViewer::-webkit-scrollbar-thumb {
+  background: var(--mantine-color-dark-6);
+  border-radius: 5px;
+}
+
+.codeViewer::-webkit-scrollbar-thumb:hover {
+  background: var(--mantine-color-dark-5);
+}
+
