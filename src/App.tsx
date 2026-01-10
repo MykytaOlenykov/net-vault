@@ -7,6 +7,7 @@ const LoginPage = lazy(() => import("./pages/Login"));
 const UsersPage = lazy(() => import("./pages/Users"));
 const DevicesPage = lazy(() => import("./pages/Devices"));
 const DeviceDetailsPage = lazy(() => import("./pages/DeviceDetails"));
+const ConfigDiffPage = lazy(() => import("./pages/ConfigDiff"));
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="users" element={<UsersPage />} />
           <Route path="devices" element={<DevicesPage />} />
           <Route path="devices/:deviceId" element={<DeviceDetailsPage />} />
+          <Route path="config-diff" element={<ConfigDiffPage />} />
         </Route>
       </Route>
     </Routes>
