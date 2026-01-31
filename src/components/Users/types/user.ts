@@ -7,6 +7,14 @@ export interface User {
   role: string;
   status: UserStatus;
   lastLogin: string;
-  mfa: boolean;
+  mfa?: boolean;
 }
+
+export type GetUsersQuery = {
+  page?: number;
+  limit?: number;
+  role?: string;
+  status?: UserStatus;
+  search?: string;
+};
 

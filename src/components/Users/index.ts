@@ -9,6 +9,14 @@ export { createUserColumns } from "./UserColumns";
 // Hooks
 export { useUsersFilter, useSearch, useUserActions } from "./hooks";
 export type { UserStatusFilter, UserRoleFilter } from "./hooks";
+export {
+  useGetUsers,
+  useGetRoles,
+  useCreateUser,
+  useUpdateUser,
+  useChangeRole,
+  useDeleteUser,
+} from "./hooks/user";
 
 // Types
-export type { User, UserStatus } from "./types";
+export type { User, UserStatus, GetUsersQuery } from "./types";

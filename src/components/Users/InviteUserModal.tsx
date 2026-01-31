@@ -1,43 +1,71 @@
 import { useState } from "react";
-import { Modal, TextInput, Button, Stack, Select, Group } from "@mantine/core";
-import type { User } from "./types";
+import {
+  Modal,
+  TextInput,
+  Button,
+  Stack,
+  Select,
+  Group,
+  PasswordInput,
+} from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { useCreateUser } from "./hooks/user/useCreateUser";
 
 interface InviteUserModalProps {
   opened: boolean;
   onClose: () => void;
-  onInvite: (user: Omit<User, "id">) => void;
+  onInvite: () => void;
+  roles: string[];
 }
-
-const ROLE_OPTIONS = ["Administrator", "Operator", "Viewer", "Auditor"];
 
 export function InviteUserModal({
   opened,
   onClose,
   onInvite,
+  roles,
 }: InviteUserModalProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<string | null>("Viewer");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState<string | null>(roles[0] || null);
 
-  const handleSubmit = () => {
-    if (name && email && role) {
-      onInvite({
-        name: name.trim(),
-        email: email.trim(),
-        role,
-        status: "pending",
-        lastLogin: "Never",
-        mfa: false,
-      });
-      // Reset form
-      setName("");
-      setEmail("");
-      setRole("Viewer");
-      onClose();
+  const createUserMutation = useCreateUser();
+
+  const handleSubmit = async () => {
+    if (name && email && password && role) {
+      try {
+        await createUserMutation.mutateAsync({
+          name: name.trim(),
+          email: email.trim(),
+          password: password,
+          role,
+        });
+        notifications.show({
+          title: "Success",
+          message: "User created successfully",
+          color: "green",
+        });
+        // Reset form
+        setName("");
+        setEmail("");
+        setPassword("");
+        setRole(roles[0] || null);
+        onInvite();
+      } catch (error: unknown) {
+        const errorMessage =
+          error && typeof error === "object" && "message" in error
+            ? String(error.message)
+            : "Failed to create user";
+        notifications.show({
+          title: "Error",
+          message: errorMessage,
+          color: "red",
+        });
+      }
     }
   };
 
-  const isValid = name.trim() && email.trim() && role;
+  const isValid = name.trim() && email.trim() && password.trim() && role;
 
   return (
     <Modal
@@ -65,20 +93,36 @@ export function InviteUserModal({
           required
         />
 
+        <PasswordInput
+          label="Password"
+          placeholder="Enter password"
+          value={password}
+          onChange={(e) => setPassword(e.currentTarget.value)}
+          required
+        />
+
         <Select
           label="Role"
           placeholder="Select a role"
           value={role}
           onChange={setRole}
-          data={ROLE_OPTIONS}
+          data={roles.map((r) => ({ value: r, label: r }))}
           required
         />
 
         <Group justify="flex-end" mt="md">
-          <Button variant="default" onClick={onClose}>
+          <Button
+            variant="default"
+            onClick={onClose}
+            disabled={createUserMutation.isPending}
+          >
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={!isValid}>
+          <Button
+            onClick={handleSubmit}
+            disabled={!isValid || createUserMutation.isPending}
+            loading={createUserMutation.isPending}
+          >
             Invite User
           </Button>
         </Group>
