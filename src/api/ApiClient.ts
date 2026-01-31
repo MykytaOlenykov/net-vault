@@ -64,6 +64,14 @@ class ApiClient {
     return this.instance.put<T>(url, data, config);
   }
 
+  patch<T>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig,
+  ): Promise<AxiosResponse<T>> {
+    return this.instance.patch<T>(url, data, config);
+  }
+
   delete<T>(
     url: string,
     config?: AxiosRequestConfig,

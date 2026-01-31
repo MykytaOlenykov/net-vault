@@ -1,34 +1,53 @@
 import { useState } from "react";
 import { Modal, Select, Button, Stack, Group, Text } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import type { User } from "./types";
+import { useChangeRole } from "./hooks/user/useChangeRole";
 
 interface ChangeRoleModalProps {
   opened: boolean;
   onClose: () => void;
   user: User | null;
-  onSave: (user: User) => void;
+  onSave: () => void;
+  roles: string[];
 }
-
-const ROLE_OPTIONS = ["Administrator", "Operator", "Viewer", "Auditor"];
 
 function ChangeRoleForm({
   user,
   onSave,
   onClose,
+  roles,
 }: {
   user: User;
-  onSave: (user: User) => void;
+  onSave: () => void;
   onClose: () => void;
+  roles: string[];
 }) {
   const [role, setRole] = useState<string | null>(user.role);
 
-  const handleSubmit = () => {
+  const changeRoleMutation = useChangeRole(user.id);
+
+  const handleSubmit = async () => {
     if (role && role !== user.role) {
-      onSave({
-        ...user,
-        role,
-      });
-      onClose();
+      try {
+        await changeRoleMutation.mutateAsync({ role });
+        notifications.show({
+          title: "Success",
+          message: "User role changed successfully",
+          color: "green",
+        });
+        onSave();
+      } catch (error: unknown) {
+        const errorMessage =
+          error && typeof error === "object" && "message" in error
+            ? String(error.message)
+            : "Failed to change role";
+        notifications.show({
+          title: "Error",
+          message: errorMessage,
+          color: "red",
+        });
+      }
     }
   };
 
@@ -48,15 +67,23 @@ function ChangeRoleForm({
         placeholder="Select a role"
         value={role}
         onChange={setRole}
-        data={ROLE_OPTIONS}
+        data={roles.map((r) => ({ value: r, label: r }))}
         required
       />
 
       <Group justify="flex-end" mt="md">
-        <Button variant="default" onClick={onClose}>
+        <Button 
+          variant="default" 
+          onClick={onClose}
+          disabled={changeRoleMutation.isPending}
+        >
           Cancel
         </Button>
-        <Button onClick={handleSubmit} disabled={!hasChanges}>
+        <Button 
+          onClick={handleSubmit} 
+          disabled={!hasChanges || changeRoleMutation.isPending}
+          loading={changeRoleMutation.isPending}
+        >
           Change Role
         </Button>
       </Group>
@@ -69,6 +96,7 @@ export function ChangeRoleModal({
   onClose,
   user,
   onSave,
+  roles,
 }: ChangeRoleModalProps) {
   if (!user) return null;
 
@@ -85,6 +113,7 @@ export function ChangeRoleModal({
         user={user}
         onSave={onSave}
         onClose={onClose}
+        roles={roles}
       />
     </Modal>
   );
