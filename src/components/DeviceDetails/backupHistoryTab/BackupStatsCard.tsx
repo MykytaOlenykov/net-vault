@@ -1,5 +1,5 @@
 import { Card, Text, Group, Box, RingProgress, ThemeIcon } from "@mantine/core";
-import type { Backup } from "../types";
+import type { Backup } from "../../../types/backup";
 
 interface Props {
   backups: Backup[];
@@ -8,7 +8,7 @@ interface Props {
 export const BackupStatsCard = ({ backups }: Props) => {
   const total = backups.length;
 
-  const successCount = backups.filter((b) => b.status === "SUCCESS").length;
+  const successCount = backups.filter((b) => b.status === "Success").length;
 
   const failedCount = total - successCount;
 
