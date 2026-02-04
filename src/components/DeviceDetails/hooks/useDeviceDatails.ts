@@ -1,27 +1,22 @@
-import { useGetDevice } from "../../Devices/hooks/device/useGetDevice";
+import { useGetDevice } from "../../Devices/hooks/useGetDevice";
 import { useGetDeviceBackups } from "./useGetDeviceBackups";
-import { useGetDeviceAudit } from "./useGetDeviceAudit";
 
-import { getCurrentConfiguration } from "../utils/getCurrentConfiguration";
+import { useGetLastBackup } from "./useGetLastBackup";
+import { mapBackupToConfiguration } from "../utils/mapBackupToConfiguration";
 
 export function useDeviceDetails(deviceId: string) {
-  const deviceQuery = useGetDevice(deviceId);
-
-  const backupsQuery = useGetDeviceBackups(deviceId);
-  const auditQuery = useGetDeviceAudit(deviceId);
-
-  const backups = backupsQuery.data ?? [];
-
+  const { data: device, isLoading: isDeviceLoading } = useGetDevice(deviceId);
+  const { data: backups, isLoading: isBeckupsLoading } =
+    useGetDeviceBackups(deviceId);
+  const { data: lastBackup, isLoading: isLastLoading } =
+    useGetLastBackup(deviceId);
   return {
-    device: deviceQuery.data,
+    device: device,
 
-    backups,
+    backups: backups,
 
-    configuration: getCurrentConfiguration(backups),
+    configuration: mapBackupToConfiguration(lastBackup) ?? null,
 
-    changes: auditQuery.data ?? [],
-
-    isLoading:
-      deviceQuery.isLoading || backupsQuery.isLoading || auditQuery.isLoading,
+    isLoading: isDeviceLoading || isBeckupsLoading || isLastLoading,
   };
 }

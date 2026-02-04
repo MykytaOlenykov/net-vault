@@ -1,8 +1,8 @@
-import type { Backup } from "../types";
+import type { Backup } from "../../../types/backup";
 
 export function filterBackupsByDevice(
   backups: Backup[],
   deviceId: string,
 ): Backup[] {
-  return backups.filter((b) => b.device_id === deviceId);
+  return backups.filter((b) => b.deviceId === deviceId);
 }

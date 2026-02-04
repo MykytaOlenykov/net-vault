@@ -10,14 +10,14 @@ import {
   TagsInput,
 } from "@mantine/core";
 import { notify } from "../../shared/helpers/notify";
-import { useCreateDevice } from "./hooks/device/useCreateDevice";
-import { useUpdateDevice } from "./hooks/device/useUpdateDevice";
+import { useCreateDevice } from "./hooks/useCreateDevice";
+import { useUpdateDevice } from "./hooks/useUpdateDevice";
 import {
   mapFormToCreateDto,
   type DeviceFormValues,
 } from "./schemas/device.schema";
-import { useDeviceForm } from "./hooks/device/useDeviceForm";
-import type { Device } from "./types/device";
+import { useDeviceForm } from "./hooks/useDeviceForm";
+import { DeviceProtocol, type Device } from "../../types/device";
 
 type BaseProps = {
   opened: boolean;
@@ -113,6 +113,20 @@ export function DeviceModal({
               })
             }
           />
+          <Select
+            label="Protocol"
+            data={Object.values(DeviceProtocol).map((p) => ({
+              value: p,
+              label: p.toUpperCase(),
+            }))}
+            error={errors.protocol?.message}
+            value={watch("protocol")}
+            onChange={(v) =>
+              setValue("protocol", v as DeviceProtocol, {
+                shouldValidate: true,
+              })
+            }
+          />
 
           <Select
             label="Device type"
@@ -142,14 +156,13 @@ export function DeviceModal({
           <TagsInput
             label="Tags"
             data={tagOptions?.map((t) => t.value)}
-            value={watch("tagIds") ?? []}
+            value={watch("tags") ?? []}
             onChange={(v) => {
-              setValue("tagIds", v ?? [], { shouldValidate: true });
+              setValue("tags", v ?? [], { shouldValidate: true });
             }}
             clearable
             splitChars={[",", " "]}
-          />
-
+          ></TagsInput>
           <Group justify="flex-end">
             <Button variant="default" onClick={onClose}>
               Cancel

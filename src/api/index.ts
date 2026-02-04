@@ -3,4 +3,3 @@ export { deviceService } from "./device/deviceService";
 export { tagService } from "./device/tagService";
 export { typeService } from "./device/typeService";
 export { backupService } from "./device/backupService";
-export { auditService } from "./device/auditService";

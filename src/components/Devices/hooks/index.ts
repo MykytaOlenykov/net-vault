@@ -1,3 +1,3 @@
-export { useDevicesFilter } from "./device/useDevicesFilter";
-export { useSearch } from "./device/useSearch";
-export { useDeviceActions } from "./device/useDeviceActions";
+export { useDevicesFilter } from "./useDevicesFilter";
+export { useSearch } from "./useSearch";
+export { useDeviceActions } from "./useDeviceActions";

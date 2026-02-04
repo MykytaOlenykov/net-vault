@@ -1,4 +1,3 @@
-// API REQUESTS
 export interface LoginRequest {
   email: string;
   password: string;
@@ -7,13 +6,6 @@ export interface LoginRequest {
 export interface VerifyOtpRequest {
   email: string;
   otp: string;
-}
-
-// API RESPONSES
-export interface ApiResponse<T = unknown> {
-  ok: boolean;
-  data?: T;
-  error?: string;
 }
 
 export interface LoginResponse {
@@ -26,5 +18,3 @@ export interface VerifyOtpResponse {
 }
 
 export type LoginStep = "login" | "otp" | "reset";
-
-// PAGE STATE
