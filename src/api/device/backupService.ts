@@ -1,11 +1,30 @@
 import ApiClient from "../ApiClient";
-import type { Backup } from "../../components/DeviceDetails/types";
-import axios from "axios";
-class BackupService extends ApiClient {
-  async getByDeviceId(deviceId: string): Promise<Backup[]> {
-    const response = await axios.get<Backup[]>("/public/mock/backups.json");
+import type { Backup, BackupPayload, BackupsPayload } from "../../types/backup";
+import type { ApiResponse } from "../../types/api";
 
-    return response.data.filter((backup) => backup.device_id === deviceId);
+class BackupService extends ApiClient {
+  async getBackupsByDeviceId(deviceId: string): Promise<Backup[]> {
+    const response = await this.get<ApiResponse<BackupsPayload>>(
+      `/devices/${deviceId}/configs`,
+    );
+    return response.data.data.configVersions;
+  }
+
+  async getBackupById(backup_id: string): Promise<Backup> {
+    const response = await this.get<ApiResponse<BackupPayload>>(
+      `/devices/configs/${backup_id}`,
+    );
+    return response.data.data.configVersion;
+  }
+
+  async getLastBackup(deviceId: string): Promise<Backup> {
+    const response = await this.get<ApiResponse<BackupPayload>>(
+      `/devices/${deviceId}/configs/last`,
+    );
+    return response.data.data.configVersion;
+  }
+  async trigerBackup(deviceId: string): Promise<void> {
+    await this.post<ApiResponse<void>>(`/devices/${deviceId}/configs`);
   }
 }
 

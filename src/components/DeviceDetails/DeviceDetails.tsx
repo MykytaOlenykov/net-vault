@@ -1,4 +1,4 @@
-import { Tabs, Button, Loader } from "@mantine/core";
+import { Tabs, Button } from "@mantine/core";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { useNavigate, useParams } from "react-router";
 import { useDisclosure } from "@mantine/hooks";
@@ -6,10 +6,10 @@ import { useDisclosure } from "@mantine/hooks";
 import { DeviceSummaryCard } from "./deviceSummaryCard";
 import { BackupHistoryTab } from "./backupHistoryTab/BackupHistoryTab";
 import { ConfigurationTab } from "./ConfigurationTab";
-import { ChangeHistoryTab } from "./changeHistoryTab/ChangeHistoryTab";
 import { useDeviceDetails } from "./hooks/useDeviceDatails";
 import { DeviceModal } from "../Devices/DeviceModal";
-import { useDeviceFormOptions } from "../Devices/hooks/device/useDeviceFormOptions";
+import { useDeviceFormOptions } from "../Devices/hooks/useDeviceFormOptions";
+import { useTriggerBackup } from "./hooks/useTriggerBackup";
 
 export const DeviceDetails = () => {
   const navigate = useNavigate();
@@ -19,10 +19,8 @@ export const DeviceDetails = () => {
 
   if (!deviceId) return null;
 
-  const { device, backups, configuration, changes, isLoading } =
-    useDeviceDetails(deviceId);
-
-  if (isLoading) return <Loader />;
+  const { device, backups, configuration } = useDeviceDetails(deviceId);
+  const { mutate: triggerBackup, isPending } = useTriggerBackup();
 
   if (!device) return null;
 
@@ -40,14 +38,14 @@ export const DeviceDetails = () => {
       <DeviceSummaryCard
         device={device}
         onEdit={open}
-        onTriggerBackup={() => console.log(`Trigger backup for ${device.id}`)}
+        isPending={isPending}
+        onTriggerBackup={() => triggerBackup(device.id)}
       />
 
       <Tabs defaultValue="backups">
         <Tabs.List>
           <Tabs.Tab value="backups">Backups</Tabs.Tab>
           <Tabs.Tab value="config">Configuration</Tabs.Tab>
-          <Tabs.Tab value="changes">Change history</Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="backups" pt="xl">
@@ -56,10 +54,6 @@ export const DeviceDetails = () => {
 
         <Tabs.Panel value="config" pt="xl">
           <ConfigurationTab configuration={configuration} />
-        </Tabs.Panel>
-
-        <Tabs.Panel value="changes" pt="xl">
-          <ChangeHistoryTab changes={changes} />
         </Tabs.Panel>
       </Tabs>
 

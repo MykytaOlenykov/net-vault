@@ -5,13 +5,15 @@ import type { Device } from "../Devices";
 interface Props {
   device: Device;
   onEdit?: (deviceId: string) => void;
-  onTriggerBackup?: (deviceId: string) => void;
+  onTriggerBackup?: () => void;
+  isPending?: boolean;
 }
 
 export const DeviceSummaryCard = ({
   device,
   onEdit,
   onTriggerBackup,
+  isPending,
 }: Props) => {
   return (
     <>
@@ -35,8 +37,8 @@ export const DeviceSummaryCard = ({
 
             <Button
               leftSection={<IconRefresh size={16} />}
-              disabled={!device.isActive}
-              onClick={() => onTriggerBackup?.(device.id)}
+              disabled={!device.isActive || isPending}
+              onClick={onTriggerBackup}
             >
               Trigger Backup
             </Button>

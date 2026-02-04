@@ -10,10 +10,10 @@ import {
   useSearch,
 } from "../../components/Devices";
 import { SearchBar } from "../../shared/ui/searchBar";
-import { useGetDevices } from "../../components/Devices/hooks/device/useGetDevices";
+import { useGetDevices } from "../../components/Devices/hooks/useGetDevices";
 import { DeviceModal } from "../../components/Devices/DeviceModal";
 import style from "./DevicePage.module.css";
-import { useDeviceFormOptions } from "../../components/Devices/hooks/device/useDeviceFormOptions";
+import { useDeviceFormOptions } from "../../components/Devices/hooks/useDeviceFormOptions";
 
 export default function DevicesPage() {
   const [opened, { open, close }] = useDisclosure(false);

@@ -1,15 +1,15 @@
 import { Grid, Paper, Text } from "@mantine/core";
 import { Table } from "../../../shared/ui/table";
-import type { Backup } from "../types";
+import type { Backup } from "../../../types/backup";
 import { backupColumns } from "./backupColumns";
 import { BackupStatsCard } from "./BackupStatsCard";
 
 interface Props {
-  backups: Backup[];
+  backups: Backup[] | undefined;
 }
 
 export const BackupHistoryTab = ({ backups }: Props) => {
-  if (!backups.length) {
+  if (!backups?.length) {
     return <Text c="dimmed">No backups available</Text>;
   }
 

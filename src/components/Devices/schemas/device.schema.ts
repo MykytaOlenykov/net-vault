@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { DeviceProtocol } from "../../../types/device";
 
 /* ======================================================
    CREATE (API request)
@@ -10,40 +11,35 @@ export const createDeviceSchema = z.object({
   port: z.number().int().min(1).max(65535),
   deviceTypeId: z.uuid("Invalid device type"),
   backupSchedule: z.string(),
+  protocol: z.enum(DeviceProtocol),
   isActive: z.boolean(),
   tags: z.array(z.string()),
 });
 
 export type CreateDeviceDto = z.infer<typeof createDeviceSchema>;
 
-/* ======================================================
-   UPDATE (API request)
-   ====================================================== */
-
 export const updateDeviceSchema = z.object({
   name: z.string().trim().min(1),
   ipAddress: z.ipv4("Wrong ip address"),
   port: z.number().int().min(1).max(65535),
   deviceTypeId: z.uuid("Invalid device type"),
-  backupSchedule: z.string().trim().length(5),
+  backupSchedule: z.string().trim(),
+  protocol: z.enum(DeviceProtocol),
   isActive: z.boolean(),
-  tagIds: z.array(z.string()),
+  tags: z.array(z.string()),
 });
 
 export type UpdateDeviceDto = z.infer<typeof updateDeviceSchema>;
-
-/* ======================================================
-   FORM (UI – Add + Edit)
-   ====================================================== */
 
 export const deviceFormSchema = z.object({
   name: z.string().trim().min(2, "Name is required"),
   ipAddress: z.ipv4("Wrong ip address"),
   port: z.number().int().min(1).max(65535),
   deviceTypeId: z.uuid("Invalid device type"),
-  backupSchedule: z.string().trim().length(5),
+  protocol: z.enum(DeviceProtocol),
+  backupSchedule: z.string().trim(),
   isActive: z.boolean(),
-  tagIds: z.array(z.string()),
+  tags: z.array(z.string()),
 });
 
 export type DeviceFormValues = z.infer<typeof deviceFormSchema>;
@@ -55,9 +51,10 @@ export const mapFormToCreateDto = (
   ipAddress: form.ipAddress,
   port: form.port,
   deviceTypeId: form.deviceTypeId,
+  protocol: form.protocol,
   backupSchedule: form.backupSchedule,
   isActive: form.isActive,
-  tags: form.tagIds,
+  tags: form.tags,
 });
 
 export type DeviceApiResponse = {
@@ -69,6 +66,7 @@ export type DeviceApiResponse = {
     id: string;
     vendor: string;
   };
+  protocol: DeviceProtocol;
   backupSchedule: string;
   isActive: boolean;
   deviceTags: {
@@ -85,7 +83,8 @@ export const mapDeviceToForm = (
   ipAddress: device.ipAddress,
   port: device.port,
   deviceTypeId: device.deviceType.id,
+  protocol: device.protocol,
   backupSchedule: device.backupSchedule,
   isActive: device.isActive,
-  tagIds: device.deviceTags.map((dt) => dt.tag.name),
+  tags: device.deviceTags.map((dt) => dt.tag.name),
 });
