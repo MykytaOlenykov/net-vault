@@ -1,30 +1,17 @@
-import type {
-  Device,
-  GetDevicesQuery,
-} from "../../components/Devices/types/device";
 import ApiClient from "../ApiClient";
-import type { CreateDeviceDto } from "../../components/Devices/schemas/device.schema";
-
-export type PaginatedResponse<T> = {
-  data: {
-    devices: T;
-  };
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-  };
-};
-
-export type Response<T> = {
-  data: {
-    device: T;
-  };
-};
+import type { Device } from "../../components/Devices";
+import type {
+  DevicesListPayload,
+  DevicePayload,
+} from "../../types/deviceResponses";
+import type { ApiResponse } from "../../types/api";
+import type { Paginated } from "../../types/api";
+import type { CreateDevicePayload } from "../../types/device";
+import type { GetDevicesQuery } from "../../types/device";
 
 class DeviceService extends ApiClient {
   async getDevices(query: GetDevicesQuery): Promise<Device[]> {
-    const response = await this.get<PaginatedResponse<Device[]>>("/devices", {
+    const response = await this.get<Paginated<DevicesListPayload>>("/devices", {
       params: query,
     });
 
@@ -32,19 +19,26 @@ class DeviceService extends ApiClient {
   }
 
   async getDevice(deviceId: string): Promise<Device> {
-    const response = await this.get<Response<Device>>(`/devices/${deviceId}`);
+    const response = await this.get<ApiResponse<DevicePayload>>(
+      `/devices/${deviceId}`,
+    );
+    return response.data.data.device;
+  }
+
+  async createDevice(data: CreateDevicePayload): Promise<Device> {
+    const response = await this.post<ApiResponse<DevicePayload>>(
+      "/devices",
+      data,
+    );
 
     return response.data.data.device;
   }
 
-  async createDevice(data: CreateDeviceDto): Promise<Device> {
-    const response = await this.post<Response<Device>>("/devices", data);
-
-    return response.data.data.device;
-  }
-
-  async updateDevice(deviceId: string, data: CreateDeviceDto): Promise<Device> {
-    const response = await this.put<Response<Device>>(
+  async updateDevice(
+    deviceId: string,
+    data: CreateDevicePayload,
+  ): Promise<Device> {
+    const response = await this.put<ApiResponse<DevicePayload>>(
       `/devices/${deviceId}`,
       data,
     );
@@ -52,8 +46,8 @@ class DeviceService extends ApiClient {
     return response.data.data.device;
   }
 
-  async deleteDevice(deviceID: string): Promise<void> {
-    await this.delete(`/devices/${deviceID}`);
+  async deleteDevice(deviceId: string): Promise<void> {
+    await this.delete(`/devices/${deviceId}`);
   }
 }
 

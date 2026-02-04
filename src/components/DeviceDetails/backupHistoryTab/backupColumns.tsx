@@ -1,19 +1,19 @@
 import { Badge, Button, Text } from "@mantine/core";
 import type { TableColumn } from "../../../shared/ui/table";
-import type { Backup } from "../types";
+import type { Backup } from "../../../types/backup";
 import { Download } from "lucide-react";
 
 export const backupColumns: TableColumn<Backup>[] = [
   {
     key: "version",
     header: "Version",
-    render: (b) => <Text>v{b.version_number}</Text>,
+    render: (b) => <Text>v{b.versionNumber}</Text>,
   },
   {
     key: "status",
     header: "Status",
     render: (b) => (
-      <Badge variant="light" color={b.status === "SUCCESS" ? "teal" : "red"}>
+      <Badge variant="light" color={b.status === "Success" ? "teal" : "red"}>
         {b.status}
       </Badge>
     ),
@@ -22,12 +22,12 @@ export const backupColumns: TableColumn<Backup>[] = [
     key: "finished",
     header: "Finished",
     render: (b) =>
-      b.finished_at ? new Date(b.finished_at).toLocaleString() : "-",
+      b.finishedAt ? new Date(b.finishedAt).toLocaleString() : "-",
   },
   {
     key: "changes",
     header: "Changes",
-    render: (b) => b.changed_lines,
+    render: (b) => b.changedLines,
   },
   {
     key: "actions",

@@ -1,5 +1,5 @@
 import type { TableColumn } from "../../shared/ui/table/types/table-column";
-import type { Device } from "./types/device";
+import type { Device } from "../../types/device";
 import { DeviceActionsMenu } from "./DeviceActionsMenu";
 import { Badge, Flex, Text } from "@mantine/core";
 
@@ -48,7 +48,7 @@ export const deviceColumns: TableColumn<Device>[] = [
       <Flex gap={4} wrap={"wrap"}>
         {d.deviceTags.length > 0
           ? d.deviceTags.map(({ tag }, index) => (
-              <Badge key={tag.id || index} variant="light">
+              <Badge key={tag.name || index} variant="light">
                 {tag.name}
               </Badge>
             ))
@@ -57,11 +57,20 @@ export const deviceColumns: TableColumn<Device>[] = [
     ),
   },
   {
+    key: "backup_schedule",
+    header: "Backup Schedule",
+    render: (d) => (
+      <span style={{ color: "var(--mantine-color-dimmed)" }}>
+        {d.backupSchedule ?? "—"}
+      </span>
+    ),
+  },
+  {
     key: "last_backup_at",
     header: "Last Backup",
     render: (d) => (
       <span style={{ color: "var(--mantine-color-dimmed)" }}>
-        {d.backupSchedule ?? "—"}
+        {new Date(d.lastBackup).toLocaleString() ?? "—"}
       </span>
     ),
   },
