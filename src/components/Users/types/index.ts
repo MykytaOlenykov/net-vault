@@ -1,1 +1,1 @@
-export type { User, UserStatus } from "./user";
+export type { User, UserStatus, GetUsersQuery } from "./user";

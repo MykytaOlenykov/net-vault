@@ -1,92 +1,106 @@
-import { useState } from "react";
-import { Paper, Stack, Button } from "@mantine/core";
+import { useState, useMemo } from "react";
+import { Paper, Stack, Button, Loader, Center } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
+import { notifications } from "@mantine/notifications";
+import { useDebouncedValue } from "@mantine/hooks";
 import {
   UsersTable,
   UsersFilters,
   EditUserModal,
   InviteUserModal,
   ChangeRoleModal,
-  useUsersFilter,
-  useSearch,
+  useGetUsers,
+  useGetRoles,
+  useDeleteUser,
   type User,
 } from "../../components/Users";
 import { SearchBar } from "../../shared/ui/searchBar";
 import style from "./UsersPage.module.css";
 
-const mockUsers: User[] = [
-  {
-    id: 1,
-    name: "Admin User",
-    email: "admin@netvault.io",
-    role: "Administrator",
-    status: "active",
-    lastLogin: "5 minutes ago",
-    mfa: true,
-  },
-  {
-    id: 2,
-    name: "John Doe",
-    email: "john.doe@netvault.io",
-    role: "Operator",
-    status: "active",
-    lastLogin: "2 hours ago",
-    mfa: true,
-  },
-  {
-    id: 3,
-    name: "Jane Smith",
-    email: "jane.smith@netvault.io",
-    role: "Viewer",
-    status: "active",
-    lastLogin: "1 day ago",
-    mfa: false,
-  },
-  {
-    id: 4,
-    name: "Bob Johnson",
-    email: "bob.johnson@netvault.io",
-    role: "Operator",
-    status: "inactive",
-    lastLogin: "1 week ago",
-    mfa: true,
-  },
-  {
-    id: 5,
-    name: "Alice Williams",
-    email: "alice.williams@netvault.io",
-    role: "Viewer",
-    status: "pending",
-    lastLogin: "Never",
-    mfa: false,
-  },
-];
+const MIN_SEARCH_LENGTH = 3;
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>(mockUsers);
   const [inviteModalOpened, setInviteModalOpened] = useState(false);
   const [editModalOpened, setEditModalOpened] = useState(false);
   const [changeRoleModalOpened, setChangeRoleModalOpened] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch] = useDebouncedValue(search, 500);
+  const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "active" | "inactive" | "pending"
+  >("all");
 
-  const { search, setSearch, filteredItems: searchedUsers } = useSearch(users);
+  const { data: rolesData } = useGetRoles();
+  const roles = useMemo(() => rolesData || [], [rolesData]);
 
-  const {
-    role,
-    setRole: onRoleChange,
-    status,
-    setStatus: onStatusChange,
-    roleOptions,
-    filteredItems: filteredUsers,
-  } = useUsersFilter(searchedUsers);
+  const deleteUserMutation = useDeleteUser();
+
+  const queryParams = useMemo(() => {
+    const params: {
+      page?: number;
+      limit?: number;
+      role?: string;
+      status?: "active" | "inactive" | "pending";
+      search?: string;
+    } = {
+      page: 1,
+      limit: 100,
+    };
+
+    // Додаємо search тільки якщо введено мінімум 3 символи
+    if (debouncedSearch && debouncedSearch.trim().length >= MIN_SEARCH_LENGTH) {
+      params.search = debouncedSearch.trim();
+    }
+    if (roleFilter && roleFilter !== "all") {
+      params.role = roleFilter;
+    }
+    if (statusFilter && statusFilter !== "all") {
+      params.status = statusFilter;
+    }
+
+    return params;
+  }, [debouncedSearch, roleFilter, statusFilter]);
+
+  const { data: users = [], isLoading } = useGetUsers(queryParams);
+
+  const roleOptionsFromApi = useMemo(() => {
+    if (!roles || !Array.isArray(roles) || roles.length === 0) {
+      return [{ value: "all", label: "All" }];
+    }
+    return [
+      { value: "all", label: "All" },
+      ...roles.map((r) => ({ value: r.name, label: r.name })),
+    ];
+  }, [roles]);
+
+  // Отримуємо масив назв ролей для модалок
+  const roleNames = useMemo(() => roles.map((r) => r.name), [roles]);
 
   const handleEdit = (user: User) => {
     setSelectedUser(user);
     setEditModalOpened(true);
   };
 
-  const handleDelete = (user: User) => {
-    setUsers(users.filter((u) => u.id !== user.id));
+  const handleDelete = async (user: User) => {
+    try {
+      await deleteUserMutation.mutateAsync(user.id);
+      notifications.show({
+        title: "Success",
+        message: "User deleted successfully",
+        color: "green",
+      });
+    } catch (error: unknown) {
+      const errorMessage =
+        error && typeof error === "object" && "message" in error
+          ? String(error.message)
+          : "Failed to delete user";
+      notifications.show({
+        title: "Error",
+        message: errorMessage,
+        color: "red",
+      });
+    }
   };
 
   const handleChangeRoleClick = (user: User) => {
@@ -94,28 +108,18 @@ export default function UsersPage() {
     setChangeRoleModalOpened(true);
   };
 
-  const handleRoleChanged = (updatedUser: User) => {
-    setUsers(
-      users.map((user) => (user.id === updatedUser.id ? updatedUser : user)),
-    );
+  const handleRoleChanged = () => {
     setChangeRoleModalOpened(false);
     setSelectedUser(null);
   };
 
-  const handleUserUpdated = (updatedUser: User) => {
-    setUsers(
-      users.map((user) => (user.id === updatedUser.id ? updatedUser : user)),
-    );
+  const handleUserUpdated = () => {
     setEditModalOpened(false);
     setSelectedUser(null);
   };
 
-  const handleUserInvited = (userData: Omit<User, "id">) => {
-    const newUser: User = {
-      ...userData,
-      id: Math.max(...users.map((u) => u.id), 0) + 1,
-    };
-    setUsers([...users, newUser]);
+  const handleUserInvited = () => {
+    setInviteModalOpened(false);
   };
 
   return (
@@ -136,27 +140,36 @@ export default function UsersPage() {
           </div>
 
           <UsersFilters
-            role={role}
-            status={status}
-            roleOptions={roleOptions}
-            onRoleChange={onRoleChange}
-            onStatusChange={onStatusChange}
+            role={roleFilter}
+            status={statusFilter}
+            roleOptions={roleOptionsFromApi}
+            onRoleChange={(value) => setRoleFilter(value)}
+            onStatusChange={(value) =>
+              setStatusFilter(value as "all" | "active" | "inactive" | "pending")
+            }
           />
         </Stack>
       </Paper>
       <Paper p={"md"} withBorder>
-        <UsersTable
-          items={filteredUsers}
-          onEdit={handleEdit}
-          onChangeRole={handleChangeRoleClick}
-          onDelete={handleDelete}
-        />
+        {isLoading ? (
+          <Center h={200}>
+            <Loader size="lg" />
+          </Center>
+        ) : (
+          <UsersTable
+            items={users}
+            onEdit={handleEdit}
+            onChangeRole={handleChangeRoleClick}
+            onDelete={handleDelete}
+          />
+        )}
       </Paper>
 
       <InviteUserModal
         opened={inviteModalOpened}
         onClose={() => setInviteModalOpened(false)}
         onInvite={handleUserInvited}
+        roles={roleNames}
       />
 
       <EditUserModal
@@ -177,6 +190,7 @@ export default function UsersPage() {
         }}
         user={selectedUser}
         onSave={handleRoleChanged}
+        roles={roleNames}
       />
     </div>
   );

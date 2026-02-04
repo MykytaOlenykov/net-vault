@@ -13,11 +13,17 @@ export function SelectFilter<T extends string>({
   data,
   onChange,
 }: SelectFilterProps<T>) {
+  // Нормалізуємо дані, щоб переконатися, що всі значення - рядки
+  const normalizedData = data.map((item) => ({
+    value: String(item.value) as T,
+    label: String(item.label),
+  }));
+
   return (
     <Select
       label={label}
-      value={value}
-      data={data}
+      value={value ? String(value) : null}
+      data={normalizedData}
       onChange={(v) => v && onChange(v as T)}
     />
   );

@@ -58,15 +58,6 @@ export const createUserColumns = (
       ),
     },
     {
-      key: "mfa",
-      header: "MFA",
-      render: (user) => (
-        <Badge variant="light" color={user.mfa ? "teal" : "red"}>
-          {user.mfa ? "Enabled" : "Disabled"}
-        </Badge>
-      ),
-    },
-    {
       key: "actions",
       header: "Actions",
       stopRowClick: true,

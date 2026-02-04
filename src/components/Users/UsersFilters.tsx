@@ -19,12 +19,20 @@ export function UsersFilters({
   onRoleChange,
   onStatusChange,
 }: UsersFiltersProps) {
+  // Нормалізуємо roleOptions, щоб переконатися, що всі значення - рядки
+  const normalizedRoleOptions = Array.isArray(roleOptions)
+    ? roleOptions.map((option) => ({
+        value: String(option.value || option),
+        label: String(option.label || option.value || option),
+      }))
+    : [{ value: "all", label: "All" }];
+
   return (
     <Group mb="md">
       <SelectFilter
         label="Role"
         value={role}
-        data={roleOptions}
+        data={normalizedRoleOptions}
         onChange={onRoleChange}
       />
 
