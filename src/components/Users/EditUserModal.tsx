@@ -6,18 +6,18 @@ import {
   Stack,
   Select,
   Group,
-  Switch,
 } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import type { User, UserStatus } from "./types";
+import { useUpdateUser } from "./hooks/user/useUpdateUser";
 
 interface EditUserModalProps {
   opened: boolean;
   onClose: () => void;
   user: User | null;
-  onSave: (user: User) => void;
+  onSave: () => void;
 }
 
-const ROLE_OPTIONS = ["Administrator", "Operator", "Viewer", "Auditor"];
 const STATUS_OPTIONS: { value: UserStatus; label: string }[] = [
   { value: "active", label: "Active" },
   { value: "inactive", label: "Inactive" },
@@ -30,30 +30,44 @@ function EditUserForm({
   onClose,
 }: {
   user: User;
-  onSave: (user: User) => void;
+  onSave: () => void;
   onClose: () => void;
 }) {
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
-  const [role, setRole] = useState<string | null>(user.role);
   const [status, setStatus] = useState<UserStatus>(user.status);
-  const [mfa, setMfa] = useState(user.mfa);
 
-  const handleSubmit = () => {
-    if (name && email && role) {
-      onSave({
-        ...user,
-        name,
-        email,
-        role,
-        status,
-        mfa,
-      });
-      onClose();
+  const updateUserMutation = useUpdateUser(user.id);
+
+  const handleSubmit = async () => {
+    if (name && email) {
+      try {
+        await updateUserMutation.mutateAsync({
+          name: name.trim(),
+          email: email.trim(),
+          status,
+        });
+        notifications.show({
+          title: "Success",
+          message: "User updated successfully",
+          color: "green",
+        });
+        onSave();
+      } catch (error: unknown) {
+        const errorMessage =
+          error && typeof error === "object" && "message" in error
+            ? String(error.message)
+            : "Failed to update user";
+        notifications.show({
+          title: "Error",
+          message: errorMessage,
+          color: "red",
+        });
+      }
     }
   };
 
-  const isValid = name.trim() && email.trim() && role;
+  const isValid = name.trim() && email.trim();
 
   return (
     <Stack gap="md">
@@ -73,31 +87,25 @@ function EditUserForm({
       />
 
       <Select
-        label="Role"
-        value={role}
-        onChange={setRole}
-        data={ROLE_OPTIONS}
-        required
-      />
-
-      <Select
         label="Status"
         value={status}
         onChange={(value) => setStatus(value as UserStatus)}
         data={STATUS_OPTIONS}
       />
 
-      <Switch
-        label="Multi-Factor Authentication (MFA)"
-        checked={mfa}
-        onChange={(e) => setMfa(e.currentTarget.checked)}
-      />
-
       <Group justify="flex-end" mt="md">
-        <Button variant="default" onClick={onClose}>
+        <Button 
+          variant="default" 
+          onClick={onClose}
+          disabled={updateUserMutation.isPending}
+        >
           Cancel
         </Button>
-        <Button onClick={handleSubmit} disabled={!isValid}>
+        <Button 
+          onClick={handleSubmit} 
+          disabled={!isValid || updateUserMutation.isPending}
+          loading={updateUserMutation.isPending}
+        >
           Save Changes
         </Button>
       </Group>
