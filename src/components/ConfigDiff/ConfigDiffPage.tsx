@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { notifications } from "@mantine/notifications";
 import { Loader, Center } from "@mantine/core";
+import { useSearchParams } from "react-router";
 import type { ViewMode, ConfigDiffData } from "./types";
 import { ConfigDiffControls } from "./ConfigDiffControls";
 import { ConfigDiffViewer } from "./ConfigDiffViewer";
@@ -12,6 +13,10 @@ import {
 import { calculateDiff, formatUnifiedDiff } from "./utils";
 
 export function ConfigDiffPage() {
+  const [searchParams] = useSearchParams();
+  const urlDeviceId = searchParams.get("deviceId");
+  const urlConfigId = searchParams.get("configId");
+
   const [leftDeviceId, setLeftDeviceId] = useState<string | null>(null);
   const [rightDeviceId, setRightDeviceId] = useState<string | null>(null);
   const [leftConfigId, setLeftConfigId] = useState<string | null>(null);
@@ -30,43 +35,86 @@ export function ConfigDiffPage() {
     rightConfigId,
   );
 
-  // Auto-select first device for both sides
+  // Initialize from URL parameters or auto-select first device
   useEffect(() => {
     if (devices.length > 0 && !leftDeviceId && !rightDeviceId) {
-      const firstDevice = devices[0];
-      setTimeout(() => {
-        setLeftDeviceId(firstDevice.id);
-        setRightDeviceId(firstDevice.id);
-      }, 0);
+      if (urlDeviceId) {
+        // If deviceId is provided in URL, use it for both sides
+        const device = devices.find((d) => d.id === urlDeviceId);
+        if (device) {
+          setTimeout(() => {
+            setLeftDeviceId(device.id);
+            setRightDeviceId(device.id);
+          }, 0);
+        }
+      } else {
+        // Otherwise, auto-select first device
+        const firstDevice = devices[0];
+        setTimeout(() => {
+          setLeftDeviceId(firstDevice.id);
+          setRightDeviceId(firstDevice.id);
+        }, 0);
+      }
     }
-  }, [devices, leftDeviceId, rightDeviceId]);
+  }, [devices, leftDeviceId, rightDeviceId, urlDeviceId]);
 
   // Auto-select configs when devices are selected
   useEffect(() => {
     if (leftConfigs.length > 0 && !leftConfigId) {
-      // Select oldest config for left
-      const oldest = [...leftConfigs].sort(
-        (a, b) =>
-          new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime(),
-      )[0];
-      setTimeout(() => {
-        setLeftConfigId(oldest.id);
-      }, 0);
+      if (urlConfigId && urlDeviceId === leftDeviceId) {
+        // If configId is provided in URL and matches the device, use it
+        const config = leftConfigs.find((c) => c.id === urlConfigId);
+        if (config) {
+          setTimeout(() => {
+            setLeftConfigId(config.id);
+          }, 0);
+        }
+      } else {
+        // Otherwise, select oldest config for left
+        const oldest = [...leftConfigs].sort(
+          (a, b) =>
+            new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime(),
+        )[0];
+        setTimeout(() => {
+          setLeftConfigId(oldest.id);
+        }, 0);
+      }
     }
-  }, [leftConfigs, leftConfigId]);
+  }, [leftConfigs, leftConfigId, urlConfigId, urlDeviceId, leftDeviceId]);
 
   useEffect(() => {
     if (rightConfigs.length > 0 && !rightConfigId) {
-      // Select newest config for right
-      const newest = [...rightConfigs].sort(
-        (a, b) =>
-          new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
-      )[0];
-      setTimeout(() => {
-        setRightConfigId(newest.id);
-      }, 0);
+      if (urlConfigId && urlDeviceId === rightDeviceId) {
+        // If configId is provided, select the newest config (last version) for right
+        // If current config is already the newest, select the previous one
+        const sortedConfigs = [...rightConfigs].sort(
+          (a, b) =>
+            new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
+        );
+        const newest = sortedConfigs[0];
+        
+        // If current config is the newest, use the second newest (previous version)
+        // Otherwise, use the newest
+        const rightConfig =
+          newest.id === urlConfigId && sortedConfigs.length > 1
+            ? sortedConfigs[1]
+            : newest;
+        
+        setTimeout(() => {
+          setRightConfigId(rightConfig.id);
+        }, 0);
+      } else {
+        // Otherwise, select newest config for right
+        const newest = [...rightConfigs].sort(
+          (a, b) =>
+            new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
+        )[0];
+        setTimeout(() => {
+          setRightConfigId(newest.id);
+        }, 0);
+      }
     }
-  }, [rightConfigs, rightConfigId]);
+  }, [rightConfigs, rightConfigId, urlConfigId, urlDeviceId, rightDeviceId]);
 
   // Calculate diff when compare data is available
   useEffect(() => {
