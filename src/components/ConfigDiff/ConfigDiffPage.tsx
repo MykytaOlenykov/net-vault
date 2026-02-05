@@ -1,134 +1,145 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { notifications } from "@mantine/notifications";
-import type { Device, ConfigFile, ViewMode, ConfigDiffData } from "./types";
+import { Loader, Center } from "@mantine/core";
+import type { ViewMode, ConfigDiffData } from "./types";
 import { ConfigDiffControls } from "./ConfigDiffControls";
 import { ConfigDiffViewer } from "./ConfigDiffViewer";
 import {
-  getDevices,
-  loadConfigFile,
-  calculateDiff,
-  formatUnifiedDiff,
-} from "./utils";
+  useGetDevicesWithConfigs,
+  useGetDeviceConfigs,
+  useCompareConfigs,
+} from "./hooks";
+import { calculateDiff, formatUnifiedDiff } from "./utils";
 
 export function ConfigDiffPage() {
-  const [devices, setDevices] = useState<Device[]>([]);
-  const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
-  const [leftConfig, setLeftConfig] = useState<ConfigFile | null>(null);
-  const [rightConfig, setRightConfig] = useState<ConfigFile | null>(null);
+  const [leftDeviceId, setLeftDeviceId] = useState<string | null>(null);
+  const [rightDeviceId, setRightDeviceId] = useState<string | null>(null);
+  const [leftConfigId, setLeftConfigId] = useState<string | null>(null);
+  const [rightConfigId, setRightConfigId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("split");
   const [diffData, setDiffData] = useState<ConfigDiffData | null>(null);
-  const [loading, setLoading] = useState(false);
 
-  // Load devices on mount
-  useEffect(() => {
-    getDevices()
-      .then(setDevices)
-      .catch((error) => {
-        console.error("Failed to load devices:", error);
-        notifications.show({
-          title: "Error",
-          message: "Failed to load devices",
-          color: "red",
-        });
-      });
-  }, []);
+  const { data: devices = [], isLoading: devicesLoading } =
+    useGetDevicesWithConfigs();
 
-  // Auto-select first device and configs
+  const { data: leftConfigs = [] } = useGetDeviceConfigs(leftDeviceId);
+  const { data: rightConfigs = [] } = useGetDeviceConfigs(rightDeviceId);
+
+  const { data: compareData, isLoading: compareLoading } = useCompareConfigs(
+    leftConfigId,
+    rightConfigId,
+  );
+
+  // Auto-select first device for both sides
   useEffect(() => {
-    if (devices.length > 0 && !selectedDevice) {
+    if (devices.length > 0 && !leftDeviceId && !rightDeviceId) {
       const firstDevice = devices[0];
-      // Use setTimeout to avoid synchronous setState in effect
       setTimeout(() => {
-        setSelectedDevice(firstDevice.name);
-        if (firstDevice.configs.length >= 2) {
-          // Select oldest and newest
-          setLeftConfig(firstDevice.configs[firstDevice.configs.length - 1]);
-          setRightConfig(firstDevice.configs[0]);
-        } else if (firstDevice.configs.length === 1) {
-          setRightConfig(firstDevice.configs[0]);
-        }
+        setLeftDeviceId(firstDevice.id);
+        setRightDeviceId(firstDevice.id);
       }, 0);
     }
-  }, [devices, selectedDevice]);
+  }, [devices, leftDeviceId, rightDeviceId]);
 
-  // Load and calculate diff when configs change
+  // Auto-select configs when devices are selected
   useEffect(() => {
-    if (!leftConfig || !rightConfig) {
-      // Use setTimeout to avoid synchronous setState in effect
-      setTimeout(() => setDiffData(null), 0);
-      return;
+    if (leftConfigs.length > 0 && !leftConfigId) {
+      // Select oldest config for left
+      const oldest = [...leftConfigs].sort(
+        (a, b) =>
+          new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime(),
+      )[0];
+      setTimeout(() => {
+        setLeftConfigId(oldest.id);
+      }, 0);
     }
+  }, [leftConfigs, leftConfigId]);
 
-    setLoading(true);
-    Promise.all([
-      loadConfigFile(leftConfig.path),
-      loadConfigFile(rightConfig.path),
-    ])
-      .then(([leftContent, rightContent]) => {
-        const hunks = calculateDiff(leftContent, rightContent);
+  useEffect(() => {
+    if (rightConfigs.length > 0 && !rightConfigId) {
+      // Select newest config for right
+      const newest = [...rightConfigs].sort(
+        (a, b) =>
+          new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime(),
+      )[0];
+      setTimeout(() => {
+        setRightConfigId(newest.id);
+      }, 0);
+    }
+  }, [rightConfigs, rightConfigId]);
+
+  // Calculate diff when compare data is available
+  useEffect(() => {
+    if (compareData) {
+      const hunks = calculateDiff(compareData.left.content, compareData.right.content);
+      setTimeout(() => {
         setDiffData({
           left: {
-            content: leftContent,
-            filename: leftConfig.name,
-            date: leftConfig.date,
+            content: compareData.left.content,
+            filename: compareData.left.filename,
+            date: compareData.left.date,
           },
           right: {
-            content: rightContent,
-            filename: rightConfig.name,
-            date: rightConfig.date,
+            content: compareData.right.content,
+            filename: compareData.right.filename,
+            date: compareData.right.date,
           },
           hunks,
         });
-      })
-      .catch((error) => {
-        console.error("Failed to load configs:", error);
-        notifications.show({
-          title: "Error",
-          message: "Failed to load configuration files",
-          color: "red",
-        });
+      }, 0);
+    } else if (!leftConfigId || !rightConfigId) {
+      setTimeout(() => {
         setDiffData(null);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [leftConfig, rightConfig]);
-
-  const handleDeviceChange = (deviceName: string | null) => {
-    setSelectedDevice(deviceName);
-    setLeftConfig(null);
-    setRightConfig(null);
-    setDiffData(null);
-
-    if (deviceName) {
-      const device = devices.find((d) => d.name === deviceName);
-      if (device && device.configs.length >= 2) {
-        setLeftConfig(device.configs[device.configs.length - 1]);
-        setRightConfig(device.configs[0]);
-      } else if (device && device.configs.length === 1) {
-        setRightConfig(device.configs[0]);
-      }
+      }, 0);
     }
+  }, [compareData, leftConfigId, rightConfigId]);
+
+  // Convert API types to component types
+  const devicesForComponent = useMemo(() => {
+    return devices.map((device) => ({
+      id: device.id,
+      name: device.name,
+      configs: device.configVersions.map((config) => ({
+        id: config.id,
+        name: `v${config.versionNumber}`,
+        date: new Date(config.startedAt).toLocaleDateString(),
+        timestamp: new Date(config.startedAt).getTime(),
+      })),
+    }));
+  }, [devices]);
+
+  const leftConfig = useMemo(() => {
+    if (!leftConfigId) return null;
+    const config = leftConfigs.find((c) => c.id === leftConfigId);
+    if (!config) return null;
+    return {
+      id: config.id,
+      name: `v${config.versionNumber}`,
+      date: new Date(config.startedAt).toLocaleDateString(),
+      timestamp: new Date(config.startedAt).getTime(),
+    };
+  }, [leftConfigId, leftConfigs]);
+
+  const rightConfig = useMemo(() => {
+    if (!rightConfigId) return null;
+    const config = rightConfigs.find((c) => c.id === rightConfigId);
+    if (!config) return null;
+    return {
+      id: config.id,
+      name: `v${config.versionNumber}`,
+      date: new Date(config.startedAt).toLocaleDateString(),
+      timestamp: new Date(config.startedAt).getTime(),
+    };
+  }, [rightConfigId, rightConfigs]);
+
+  const handleLeftDeviceChange = (deviceId: string | null) => {
+    setLeftDeviceId(deviceId);
+    setLeftConfigId(null);
   };
 
-  const handleLeftConfigChange = (configPath: string | null) => {
-    if (!configPath) {
-      setLeftConfig(null);
-      return;
-    }
-    const device = devices.find((d) => d.name === selectedDevice);
-    const config = device?.configs.find((c) => c.path === configPath);
-    setLeftConfig(config || null);
-  };
-
-  const handleRightConfigChange = (configPath: string | null) => {
-    if (!configPath) {
-      setRightConfig(null);
-      return;
-    }
-    const device = devices.find((d) => d.name === selectedDevice);
-    const config = device?.configs.find((c) => c.path === configPath);
-    setRightConfig(config || null);
+  const handleRightDeviceChange = (deviceId: string | null) => {
+    setRightDeviceId(deviceId);
+    setRightConfigId(null);
   };
 
   const handleCopy = () => {
@@ -185,23 +196,35 @@ export function ConfigDiffPage() {
     });
   };
 
+  if (devicesLoading) {
+    return (
+      <Center h={400}>
+        <Loader size="lg" />
+      </Center>
+    );
+  }
+
   return (
     <>
       <ConfigDiffControls
-        devices={devices}
-        selectedDevice={selectedDevice}
-        onDeviceChange={handleDeviceChange}
+        devices={devicesForComponent}
+        leftDevice={leftDeviceId}
+        rightDevice={rightDeviceId}
+        onLeftDeviceChange={handleLeftDeviceChange}
+        onRightDeviceChange={handleRightDeviceChange}
         leftConfig={leftConfig}
         rightConfig={rightConfig}
-        onLeftConfigChange={handleLeftConfigChange}
-        onRightConfigChange={handleRightConfigChange}
+        onLeftConfigChange={setLeftConfigId}
+        onRightConfigChange={setRightConfigId}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         onCopy={handleCopy}
         onExport={handleExport}
       />
-      {loading ? (
-        <div style={{ textAlign: "center", padding: "2rem" }}>Loading...</div>
+      {compareLoading ? (
+        <Center h={200}>
+          <Loader size="lg" />
+        </Center>
       ) : (
         <ConfigDiffViewer data={diffData} viewMode={viewMode} />
       )}
