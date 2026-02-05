@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import { useTriggerBackup } from "../DeviceDetails/hooks/useTriggerBackup";
 import { backupService } from "../../api";
 import { notify } from "../../shared/helpers/notify";
+import { useDownloadConfig } from "../DeviceDetails/hooks/useDownloadConfig";
 
 export function DeviceConfigChangeActionsMenu({
   device,
@@ -13,6 +14,7 @@ export function DeviceConfigChangeActionsMenu({
 }) {
   const navigate = useNavigate();
   const { mutate: triggerBackup } = useTriggerBackup();
+  const { downloadText } = useDownloadConfig();
 
   const viewDetails = () => {
     navigate(`/devices/${device.id}`);
@@ -22,23 +24,14 @@ export function DeviceConfigChangeActionsMenu({
     triggerBackup(device.id);
   };
 
-  const downloadConfig = async () => {
+  const getAndDownloadConfig = async () => {
     try {
       const backup = await backupService.getLastBackup(device.id);
       if (!backup || !backup.configText) {
         notify.error("No config available for download");
         return;
       }
-      const blob = new Blob([backup.configText], {
-        type: "text/plain",
-      });
-
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${device.deviceName}-last-config.txt`;
-      link.click();
-      URL.revokeObjectURL(url);
+      downloadText(backup.configText, `backup_v${backup.versionNumber}.txt`);
     } catch {
       notify.error("Failed to download config");
     }
@@ -63,7 +56,7 @@ export function DeviceConfigChangeActionsMenu({
           key: "download",
           label: "Download Config",
           icon: <IconDownload size={16} />,
-          onClick: downloadConfig,
+          onClick: getAndDownloadConfig,
         },
       ]}
     />
