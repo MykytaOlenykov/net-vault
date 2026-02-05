@@ -14,7 +14,7 @@ export const DeviceConfigChangeColumns: TableColumn<DeviceConfigChange>[] = [
     header: "Config Changes",
     render: (device) => (
       <Badge color="violet" variant="light">
-        {device.changesCount} changes
+        {device.changesCount ? `${device.changesCount} changes` : "—"}
       </Badge>
     ),
   },
@@ -23,7 +23,7 @@ export const DeviceConfigChangeColumns: TableColumn<DeviceConfigChange>[] = [
     header: "Last Backup",
     render: (device) => (
       <Text size="sm" c="dimmed">
-        {new Date(device.lastBackupAt).toLocaleString()}
+        {new Date(device.lastBackupAt).toLocaleString() || "—"}
       </Text>
     ),
   },
