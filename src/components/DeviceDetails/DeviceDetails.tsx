@@ -53,7 +53,7 @@ export const DeviceDetails = () => {
         </Tabs.Panel>
 
         <Tabs.Panel value="config" pt="xl">
-          <ConfigurationTab configuration={configuration} />
+          <ConfigurationTab configuration={configuration} deviceId={deviceId} />
         </Tabs.Panel>
       </Tabs>
 

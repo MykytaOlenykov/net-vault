@@ -5,12 +5,14 @@ import { ConfigDiffLegend } from "./ConfigDiffLegend";
 
 interface ConfigDiffControlsProps {
   devices: Device[];
-  selectedDevice: string | null;
-  onDeviceChange: (deviceName: string | null) => void;
+  leftDevice: string | null;
+  rightDevice: string | null;
+  onLeftDeviceChange: (deviceName: string | null) => void;
+  onRightDeviceChange: (deviceName: string | null) => void;
   leftConfig: ConfigFile | null;
   rightConfig: ConfigFile | null;
-  onLeftConfigChange: (configPath: string | null) => void;
-  onRightConfigChange: (configPath: string | null) => void;
+  onLeftConfigChange: (configId: string | null) => void;
+  onRightConfigChange: (configId: string | null) => void;
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
   onCopy: () => void;
@@ -19,8 +21,10 @@ interface ConfigDiffControlsProps {
 
 export function ConfigDiffControls({
   devices,
-  selectedDevice,
-  onDeviceChange,
+  leftDevice,
+  rightDevice,
+  onLeftDeviceChange,
+  onRightDeviceChange,
   leftConfig,
   rightConfig,
   onLeftConfigChange,
@@ -30,10 +34,19 @@ export function ConfigDiffControls({
   onCopy,
   onExport,
 }: ConfigDiffControlsProps) {
-  const selectedDeviceData = devices.find((d) => d.name === selectedDevice);
-  const configOptions = selectedDeviceData
-    ? selectedDeviceData.configs.map((config) => ({
-        value: config.path,
+  const leftDeviceData = devices.find((d) => d.id === leftDevice);
+  const rightDeviceData = devices.find((d) => d.id === rightDevice);
+
+  const leftConfigOptions = leftDeviceData
+    ? leftDeviceData.configs.map((config) => ({
+        value: config.id,
+        label: `${config.date} (${config.name})`,
+      }))
+    : [];
+
+  const rightConfigOptions = rightDeviceData
+    ? rightDeviceData.configs.map((config) => ({
+        value: config.id,
         label: `${config.date} (${config.name})`,
       }))
     : [];
@@ -43,35 +56,45 @@ export function ConfigDiffControls({
       <Group justify="space-between" mb="lg">
         <Group>
           <Select
-            placeholder="Select device"
-            value={selectedDevice}
-            onChange={onDeviceChange}
+            placeholder="Select left device"
+            value={leftDevice}
+            onChange={onLeftDeviceChange}
             data={devices.map((device) => ({
-              value: device.name,
+              value: device.id,
               label: device.name,
             }))}
             w={200}
           />
-          {selectedDeviceData && (
-            <>
-              <Select
-                placeholder="Select version"
-                value={leftConfig?.path || null}
-                onChange={onLeftConfigChange}
-                data={configOptions}
-                w={250}
-                disabled={!selectedDevice}
-              />
-              <Text c="dimmed">vs</Text>
-              <Select
-                placeholder="Select version"
-                value={rightConfig?.path || null}
-                onChange={onRightConfigChange}
-                data={configOptions}
-                w={250}
-                disabled={!selectedDevice}
-              />
-            </>
+          {leftDeviceData && (
+            <Select
+              placeholder="Select left config"
+              value={leftConfig?.id || null}
+              onChange={onLeftConfigChange}
+              data={leftConfigOptions}
+              w={250}
+              disabled={!leftDevice}
+            />
+          )}
+          <Text c="dimmed">vs</Text>
+          <Select
+            placeholder="Select right device"
+            value={rightDevice}
+            onChange={onRightDeviceChange}
+            data={devices.map((device) => ({
+              value: device.id,
+              label: device.name,
+            }))}
+            w={200}
+          />
+          {rightDeviceData && (
+            <Select
+              placeholder="Select right config"
+              value={rightConfig?.id || null}
+              onChange={onRightConfigChange}
+              data={rightConfigOptions}
+              w={250}
+              disabled={!rightDevice}
+            />
           )}
         </Group>
 

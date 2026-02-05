@@ -1,11 +1,12 @@
 export interface ConfigFile {
+  id: string;
   name: string;
-  path: string;
   date: string;
   timestamp: number;
 }
 
 export interface Device {
+  id: string;
   name: string;
   configs: ConfigFile[];
 }
