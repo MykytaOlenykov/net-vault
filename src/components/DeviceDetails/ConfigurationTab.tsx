@@ -1,12 +1,16 @@
 import { Paper, Group, Text, Code, Badge, Button } from "@mantine/core";
 import { Download } from "lucide-react";
+import { useNavigate } from "react-router";
 import type { Configuration } from "./types";
 
 interface Props {
   configuration: Configuration | null;
+  deviceId: string;
 }
 
-export const ConfigurationTab = ({ configuration }: Props) => {
+export const ConfigurationTab = ({ configuration, deviceId }: Props) => {
+  const navigate = useNavigate();
+
   if (!configuration) {
     return <Text c="dimmed">No configuration available</Text>;
   }
@@ -21,6 +25,11 @@ export const ConfigurationTab = ({ configuration }: Props) => {
     a.click();
 
     URL.revokeObjectURL(url);
+  };
+
+  const handleCompareVersions = () => {
+    // Navigate to config-diff page with deviceId and current configId
+    navigate(`/config-diff?deviceId=${deviceId}&configId=${configuration.backupId}`);
   };
 
   return (
@@ -40,7 +49,7 @@ export const ConfigurationTab = ({ configuration }: Props) => {
             Download
           </Button>
 
-          <Button size="sm" variant="default">
+          <Button size="sm" variant="default" onClick={handleCompareVersions}>
             Compare Versions
           </Button>
         </Group>
