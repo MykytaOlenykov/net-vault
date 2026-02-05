@@ -2,6 +2,7 @@ import { Paper, Group, Text, Code, Badge, Button } from "@mantine/core";
 import { Download } from "lucide-react";
 import { useNavigate } from "react-router";
 import type { Configuration } from "./types";
+import { useDownloadConfig } from "./hooks/useDownloadConfig";
 
 interface Props {
   configuration: Configuration | null;
@@ -10,26 +11,24 @@ interface Props {
 
 export const ConfigurationTab = ({ configuration, deviceId }: Props) => {
   const navigate = useNavigate();
+  const { downloadText } = useDownloadConfig();
 
   if (!configuration) {
     return <Text c="dimmed">No configuration available</Text>;
   }
 
-  const download = () => {
-    const blob = new Blob([configuration.configText]);
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `config_v${configuration.version}.txt`;
-    a.click();
-
-    URL.revokeObjectURL(url);
+  const handleDownload = () => {
+    downloadText(
+      configuration.configText,
+      `config_v${configuration.version}.txt`,
+    );
   };
 
   const handleCompareVersions = () => {
     // Navigate to config-diff page with deviceId and current configId
-    navigate(`/config-diff?deviceId=${deviceId}&configId=${configuration.backupId}`);
+    navigate(
+      `/config-diff?deviceId=${deviceId}&configId=${configuration.backupId}`,
+    );
   };
 
   return (
@@ -44,7 +43,7 @@ export const ConfigurationTab = ({ configuration, deviceId }: Props) => {
             size="sm"
             variant="default"
             leftSection={<Download size={14} />}
-            onClick={download}
+            onClick={handleDownload}
           >
             Download
           </Button>

@@ -3,7 +3,9 @@ import type { TableColumn } from "../../../shared/ui/table";
 import type { Backup } from "../../../types/backup";
 import { Download } from "lucide-react";
 
-export const backupColumns: TableColumn<Backup>[] = [
+export const getBackupsColumns = (
+  onDownload: (backup: Backup) => void,
+): TableColumn<Backup>[] => [
   {
     key: "version",
     header: "Version",
@@ -27,14 +29,19 @@ export const backupColumns: TableColumn<Backup>[] = [
   {
     key: "changes",
     header: "Changes",
-    render: (b) => b.changedLines,
+    render: (b) => (b.changedLines ? b.changedLines : "-"),
   },
   {
     key: "actions",
     header: "Actions",
     stopRowClick: true,
-    render: () => (
-      <Button variant="light" size="xs" leftSection={<Download size="16" />}>
+    render: (b) => (
+      <Button
+        onClick={() => onDownload(b)}
+        variant="light"
+        size="xs"
+        leftSection={<Download size="16" />}
+      >
         Download
       </Button>
     ),
